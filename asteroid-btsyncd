@@ -20,10 +20,10 @@ import dbus.exceptions
 import dbus.mainloop.glib
 import dbus.service
 
+import os
+import time
 import array
 import gobject
-
-from random import randint
 
 mainloop = None
 
@@ -282,6 +282,78 @@ class NotificationsFeedbackChrc(Characteristic):
                 service)
 
 
+# TODO: Use Gio.GSettings (when available) instead of os.system("gsettings ...
+class WeatherService(Service):
+    """
+    This GATT Service receives notifications from central devices (laptop,
+    phone...) This service is also responsible for notifying seen notifs.
+    """
+    NOTIF_UUID = '00008071-0000-0000-0000-00A57E401D05'
+
+    def __init__(self, bus, index):
+        Service.__init__(self, bus, index, self.NOTIF_UUID, True)
+        self.add_characteristic(WeatherCityChrc(bus, 0, self))
+
+        self.add_characteristic(WeatherIdsChrc(bus, 1, self))
+        self.add_characteristic(WeatherMaxTempsChrc(bus, 2, self))
+        self.add_characteristic(WeatherMinTempsChrc(bus, 3, self))
+
+class WeatherCityChrc(Characteristic):
+    WEAT_CITY_UUID = '00008001-0000-0000-0000-00A57E401D05'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.WEAT_CITY_UUID,
+                ['write'],
+                service)
+
+    def WriteValue(self, value):
+        string = ''.join([unichr(byte) for byte in value])
+        os.system("gsettings set org.asteroidos.weather city-name '" + string + "'") 
+
+class WeatherIdsChrc(Characteristic):
+    WEAT_IDS_UUID = '00008002-0000-0000-0000-00A57E401D05'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.WEAT_IDS_UUID,
+                ['write'],
+                service)
+
+    def WriteValue(self, value):
+        for i in range(5):
+            os.system("gsettings set org.asteroidos.weather.day" + str(i) +" id " + str(value[2*i]*256 +value[2*i+1]))
+
+class WeatherMinTempsChrc(Characteristic):
+    WEAT_MINT_UUID = '00008003-0000-0000-0000-00A57E401D05'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.WEAT_MINT_UUID,
+                ['write'],
+                service)
+
+    def WriteValue(self, value):
+        for i in range(5):
+            os.system("gsettings set org.asteroidos.weather.day" + str(i) +" min-temp " + str(value[2*i]*256 +value[2*i+1]))
+
+class WeatherMaxTempsChrc(Characteristic):
+    WEAT_MAXT_UUID = '00008004-0000-0000-0000-00A57E401D05'
+
+    def __init__(self, bus, index, service):
+        Characteristic.__init__(
+                self, bus, index,
+                self.WEAT_MAXT_UUID,
+                ['write'],
+                service)
+
+    def WriteValue(self, value):
+        for i in range(5):
+            os.system("gsettings set org.asteroidos.weather.day" + str(i) +" max-temp " + str(value[2*i]*256 +value[2*i+1]))
+
 def register_service_cb():
     print('GATT service registered')
 
@@ -315,14 +387,17 @@ def main():
             bus.get_object(BLUEZ_SERVICE_NAME, adapter),
             GATT_MANAGER_IFACE)
 
-    hr_service = NotificationsService(bus, 0)
-
-    mainloop = gobject.MainLoop()
-
-    service_manager.RegisterService(hr_service.get_path(), {},
+    notif_service = NotificationsService(bus, 0)
+    service_manager.RegisterService(notif_service.get_path(), {},
                                     reply_handler=register_service_cb,
                                     error_handler=register_service_error_cb)
 
+    weather_service = WeatherService(bus, 1)
+    service_manager.RegisterService(weather_service.get_path(), {},
+                                    reply_handler=register_service_cb,
+                                    error_handler=register_service_error_cb)
+
+    mainloop = gobject.MainLoop()
     mainloop.run()
 
 if __name__ == '__main__':
