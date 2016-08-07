@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schemalist>
+    <schema path="/org/asteroidos/weather/" id="org.asteroidos.weather">
+        <key name='city-name' type='s'>
+            <default>""</default>
+            <summary>Name of the city</summary>
+            <description>A string containing the name of the city the weather is retrieved from.</description>
+        </key>
+        <key name="timestamp-day0" type="i">
+            <default>0</default>
+            <summary>Timestamp</summary>
+            <description>A timestamp in the current day (day0).</description>
+        </key>
+    </schema>
+
+    <schema path="/org/asteroidos/weather/day0/" id="org.asteroidos.weather.day0">
+        <key name="id" type="i">
+            <default>0</default>
+            <summary>Weather ID</summary>
+            <description>Stores a weather ID (implementation specific).</description>
+        </key>
+        <key name="min-temp" type="i">
+            <default>0</default>
+            <summary>Minimum temperature</summary>
+            <description>Minimum temperature throughout the day.</description>
+        </key>
+        <key name="max-temp" type="i">
+            <default>0</default>
+            <summary>Maximum temperature</summary>
+            <description>Maximum temperature throughout the day.</description>
+        </key>
+    </schema>
+
+    <schema path="/org/asteroidos/weather/day1/" id="org.asteroidos.weather.day1">
+        <key name="id" type="i">
+            <default>0</default>
+            <summary>Weather ID</summary>
+            <description>Stores a weather ID (implementation specific).</description>
+        </key>
+        <key name="min-temp" type="i">
+            <default>0</default>
+            <summary>Minimum temperature</summary>
+            <description>Minimum temperature throughout the day.</description>
+        </key>
+        <key name="max-temp" type="i">
+            <default>0</default>
+            <summary>Maximum temperature</summary>
+            <description>Maximum temperature throughout the day.</description>
+        </key>
+    </schema>
+
+    <schema path="/org/asteroidos/weather/day2/" id="org.asteroidos.weather.day2">
+        <key name="id" type="i">
+            <default>0</default>
+            <summary>Weather ID</summary>
+            <description>Stores a weather ID (implementation specific).</description>
+        </key>
+        <key name="min-temp" type="i">
+            <default>0</default>
+            <summary>Minimum temperature</summary>
+            <description>Minimum temperature throughout the day.</description>
+        </key>
+        <key name="max-temp" type="i">
+            <default>0</default>
+            <summary>Maximum temperature</summary>
+            <description>Maximum temperature throughout the day.</description>
+        </key>
+    </schema>
+
+    <schema path="/org/asteroidos/weather/day3/" id="org.asteroidos.weather.day3">
+        <key name="id" type="i">
+            <default>0</default>
+            <summary>Weather ID</summary>
+            <description>Stores a weather ID (implementation specific).</description>
+        </key>
+        <key name="min-temp" type="i">
+            <default>0</default>
+            <summary>Minimum temperature</summary>
+            <description>Minimum temperature throughout the day.</description>
+        </key>
+        <key name="max-temp" type="i">
+            <default>0</default>
+            <summary>Maximum temperature</summary>
+            <description>Maximum temperature throughout the day.</description>
+        </key>
+    </schema>
+
+    <schema path="/org/asteroidos/weather/day4/" id="org.asteroidos.weather.day4">
+        <key name="id" type="i">
+            <default>0</default>
+            <summary>Weather ID</summary>
+            <description>Stores a weather ID (implementation specific).</description>
+        </key>
+        <key name="min-temp" type="i">
+            <default>0</default>
+            <summary>Minimum temperature</summary>
+            <description>Minimum temperature throughout the day.</description>
+        </key>
+        <key name="max-temp" type="i">
+            <default>0</default>
+            <summary>Maximum temperature</summary>
+            <description>Maximum temperature throughout the day.</description>
+        </key>
+    </schema>
+
+</schemalist>
