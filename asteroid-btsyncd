@@ -20,10 +20,11 @@ import dbus.exceptions
 import dbus.mainloop.glib
 import dbus.service
 
+from gi.repository import GLib
+
 import os
 import time
 import array
-import gobject
 
 mainloop = None
 
@@ -397,7 +398,7 @@ def main():
                                     reply_handler=register_service_cb,
                                     error_handler=register_service_error_cb)
 
-    mainloop = gobject.MainLoop()
+    mainloop = GLib.MainLoop()
     mainloop.run()
 
 if __name__ == '__main__':
