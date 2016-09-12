@@ -326,6 +326,7 @@ class WeatherIdsChrc(Characteristic):
     def WriteValue(self, value):
         for i in range(5):
             os.system("gsettings set org.asteroidos.weather.day" + str(i) +" id " + str(value[2*i]*256 +value[2*i+1]))
+        os.system("gsettings set org.asteroidos.weather timestamp-day0 " + str(int(time.time())))
 
 class WeatherMinTempsChrc(Characteristic):
     WEAT_MINT_UUID = '00008003-0000-0000-0000-00A57E401D05'
