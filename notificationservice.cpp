@@ -27,7 +27,7 @@ public:
     NotificationsUpdateChrc(QDBusConnection bus, unsigned int index, Service *service) : Characteristic(bus, index, NOTI_UPD_UUID, {"write"}, service, service) {}
 
 public slots:
-    void writeValue(QByteArray value)
+    void WriteValue(QByteArray value)
     {
         QVariantMap hints;
         hints.insert("x-nemo-preview-body", QString(value));

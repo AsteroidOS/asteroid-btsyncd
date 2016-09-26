@@ -25,7 +25,7 @@ public:
     MediaTitleChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, MEDIA_TITLE_UUID, {"write"}, service) {}
 
 public slots:
-    void writeValue(QByteArray value)
+    void WriteValue(QByteArray value)
     {
         // TODO: Title
     }
@@ -37,7 +37,7 @@ public:
     MediaAlbumChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, MEDIA_ALBUM_UUID, {"write"}, service) {}
 
 public slots:
-    void writeValue(QByteArray value)
+    void WriteValue(QByteArray value)
     {
         // TODO: Album
     }
@@ -49,7 +49,7 @@ public:
     MediaArtistChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, MEDIA_ARTIST_UUID, {"write"}, service) {}
 
 public slots:
-    void writeValue(QByteArray value)
+    void WriteValue(QByteArray value)
     {
         // TODO: Artist
     }
@@ -61,7 +61,7 @@ public:
     MediaPlayingChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, MEDIA_PLAY_UUID, {"write"}, service) {}
 
 public slots:
-    void writeValue(QByteArray value)
+    void WriteValue(QByteArray value)
     {
         // TODO: Playing
     }
