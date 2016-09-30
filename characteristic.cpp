@@ -76,7 +76,7 @@ QByteArray Characteristic::ReadValue()
     return QByteArray();
 }
 
-void Characteristic::WriteValue(QByteArray value)
+void Characteristic::WriteValue(QByteArray)
 {
     fprintf(stderr, "Default WriteValue called\n");
 }

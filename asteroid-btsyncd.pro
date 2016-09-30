@@ -2,7 +2,7 @@ TEMPLATE = app
 QT -= gui
 QT += dbus
 CONFIG += link_pkgconfig c++11
-PKGCONFIG += giomm-2.4
+PKGCONFIG += giomm-2.4 mpris-qt5
 
 HEADERS += \
     notificationservice.h \

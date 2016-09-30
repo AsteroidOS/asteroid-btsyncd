@@ -57,7 +57,7 @@ QByteArray Descriptor::ReadValue()
     return QByteArray();
 }
 
-void Descriptor::WriteValue(QByteArray value)
+void Descriptor::WriteValue(QByteArray)
 {
     fprintf(stderr, "Default WriteValue called, returning error\n");
 }

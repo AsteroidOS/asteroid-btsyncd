@@ -20,13 +20,58 @@
 
 #include <QObject>
 
+#include <MprisPlayer>
+
 #include "service.h"
+
+#define MEDIA_COMMAND_PREVIOUS 0x0
+#define MEDIA_COMMAND_NEXT     0x1
+#define MEDIA_COMMAND_PLAY     0x2
+#define MEDIA_COMMAND_PAUSE    0x3
+
+
+class MediaCommandsChrc : public Characteristic
+{
+    Q_OBJECT
+    Q_PROPERTY(QByteArray value READ getValue NOTIFY valueChanged)
+
+public:
+    MediaCommandsChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
+        : Characteristic(bus, index, MEDIA_COMM_UUID, {"notify"}, service), m_player(player)
+    {
+        m_value.resize(1);
+    }
+
+signals:
+    void valueChanged();
+
+private:
+    MprisPlayer *m_player;
+    QByteArray m_value;
+
+    QByteArray getValue()
+    {
+        return m_value;
+    }
+
+public slots:
+    void pauseRequested();
+    void playRequested();
+    void playPauseRequested();
+    void stopRequested();
+    void nextRequested();
+    void previousRequested();
+};
 
 class MediaService : public Service
 {
     Q_OBJECT
 public:
     explicit MediaService(QDBusConnection bus, int index, QObject *parent = 0);
+
+private:
+    MprisPlayer *m_mprisPlayer;
+    MediaCommandsChrc *m_commandsChrc;
 };
 
 #endif // MEDIASERVICE_H
