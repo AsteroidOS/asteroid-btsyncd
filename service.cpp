@@ -22,7 +22,7 @@
 
 Service::Service(QDBusConnection bus, unsigned int index, QString uuid, QObject *parent) : QObject(parent), mBus(QDBusConnection::systemBus())
 {
-    mPath = PATH_BASE + QString::number(index);
+    mPath = SERVICE_PATH_BASE + QString::number(index);
     mBus = bus;
     mUuid = uuid;
 

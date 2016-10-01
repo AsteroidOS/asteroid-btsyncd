@@ -19,18 +19,20 @@
 #define COMMON_H
 
 /* D-Bus paths and interfaces */
-#define SERVICE_NAME       "org.asteroidos.btsyncd"
+#define SERVICE_NAME                 "org.asteroidos.btsyncd"
 
-#define BLUEZ_SERVICE_NAME "org.bluez"
-#define GATT_MANAGER_IFACE "org.bluez.GattManager1"
-#define DBUS_OM_IFACE      "org.freedesktop.DBus.ObjectManager"
-#define DBUS_PROP_IFACE    "org.freedesktop.DBus.Properties"
+#define BLUEZ_SERVICE_NAME           "org.bluez"
+#define GATT_MANAGER_IFACE           "org.bluez.GattManager1"
+#define DBUS_OM_IFACE                "org.freedesktop.DBus.ObjectManager"
+#define LE_ADVERTISING_MANAGER_IFACE "org.bluez.LEAdvertisingManager1"
+#define LE_ADVERTISEMENT_IFACE       "org.bluez.LEAdvertisement1"
 
-#define GATT_SERVICE_IFACE "org.bluez.GattService1"
-#define GATT_CHRC_IFACE    "org.bluez.GattCharacteristic1"
-#define GATT_DESC_IFACE    "org.bluez.GattDescriptor1"
+#define GATT_SERVICE_IFACE           "org.bluez.GattService1"
+#define GATT_CHRC_IFACE              "org.bluez.GattCharacteristic1"
+#define GATT_DESC_IFACE              "org.bluez.GattDescriptor1"
 
-#define PATH_BASE "/org/asteroidos/btsyncd/service"
+#define SERVICE_PATH_BASE            "/org/asteroidos/btsyncd/service"
+#define ADVERTISEMENT_PATH_BASE      "/org/asteroidos/btsyncd/advertisement"
 
 /* GATT Services and Characteristics UUIDs */
 

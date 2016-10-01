@@ -25,6 +25,7 @@
 #include "notificationservice.h"
 #include "weatherservice.h"
 #include "mediaservice.h"
+#include "advertisement.h"
 
 QString findAdapter(QDBusConnection bus)
 {
@@ -88,6 +89,13 @@ int main(int argc, char **argv)
     serviceManager.asyncCall("RegisterService", qVariantFromValue(notifServ.getPath()), QVariantMap());
     serviceManager.asyncCall("RegisterService", qVariantFromValue(weatherServ.getPath()), QVariantMap());
     serviceManager.asyncCall("RegisterService", qVariantFromValue(mediaServ.getPath()), QVariantMap());
+
+
+    QDBusInterface adManager(BLUEZ_SERVICE_NAME, adapter, LE_ADVERTISING_MANAGER_IFACE, bus);
+
+    Advertisement advert(bus);
+
+    adManager.asyncCall("RegisterAdvertisement", qVariantFromValue(advert.getPath()), QVariantMap());
 
     app.exec();
     return 0;
