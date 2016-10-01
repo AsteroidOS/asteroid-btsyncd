@@ -63,6 +63,10 @@ int main(int argc, char **argv)
         fprintf(stderr, "Cannot connect to the D-Bus system bus.\n");
         return 2;
     }
+    if (!QDBusConnection::sessionBus().isConnected()) {
+        fprintf(stderr, "Cannot connect to the D-Bus session bus.\n");
+        return 2;
+    }
 
     QString adapter = findAdapter(bus);
     if(adapter.isEmpty()) {
