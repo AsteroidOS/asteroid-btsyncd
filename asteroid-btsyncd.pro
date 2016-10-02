@@ -11,14 +11,16 @@ HEADERS += \
     service.h \
     characteristic.h \
     descriptor.h \
-    common.h
+    common.h \
+    advertisement.h
 SOURCES += main.cpp \
     notificationservice.cpp \
     weatherservice.cpp \
     mediaservice.cpp \
     service.cpp \
     characteristic.cpp \
-    descriptor.cpp
+    descriptor.cpp \
+    advertisement.cpp
 
 TARGET = asteroid-btsyncd
 target.path = /usr/bin/
