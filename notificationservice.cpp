@@ -20,6 +20,7 @@
 #include "common.h"
 
 #include <QDBusInterface>
+#include <QXmlStreamReader>
 
 class NotificationsUpdateChrc : public Characteristic
 {
@@ -29,20 +30,40 @@ public:
 public slots:
     void WriteValue(QByteArray value)
     {
+        QString packageName, id, appName, appIcon, summary, body;
+
+        QXmlStreamReader reader(value);
+
+        if(reader.readNextStartElement()) {
+            if(reader.name() == "insert"){
+                while(reader.readNextStartElement()) {
+                    if(reader.name() == "pn") packageName = reader.readElementText();
+                    else if(reader.name() == "id") id = reader.readElementText();
+                    else if(reader.name() == "an") appName = reader.readElementText();
+                    else if(reader.name() == "ai") appIcon = reader.readElementText();
+                    else if(reader.name() == "su") summary = reader.readElementText();
+                    else if(reader.name() == "bo") body = reader.readElementText();
+                    else reader.skipCurrentElement();
+                }
+            }
+            else
+                reader.raiseError("Incorrect root node");
+        }
+
         QVariantMap hints;
-        hints.insert("x-nemo-preview-body", QString(value));
-        hints.insert("x-nemo-preview-summary", "Phone");
+        hints.insert("x-nemo-preview-body", body);
+        hints.insert("x-nemo-preview-summary", summary);
         hints.insert("urgency", 3);
 
         QList<QVariant> argumentList;
-        argumentList << "asteroid-btsyncd"; // app name
-        argumentList << (uint)0;            // replace id
-        argumentList << "";                 // app icon
-        argumentList << "Phone";            // summary
-        argumentList << QString(value);     // body
-        argumentList << QStringList();      // actions
-        argumentList << hints;              // hints
-        argumentList << (int)3000;          // timeout in ms
+        argumentList << appName;
+        argumentList << (uint)0;       // replace ID
+        argumentList << appIcon;
+        argumentList << summary;
+        argumentList << body;
+        argumentList << QStringList(); // actions
+        argumentList << hints;
+        argumentList << (int) 3000;    // timeout
 
         static QDBusInterface notifyApp("org.freedesktop.Notifications", "/org/freedesktop/Notifications", "org.freedesktop.Notifications");
         QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
