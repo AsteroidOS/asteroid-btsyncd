@@ -37,7 +37,7 @@ class Advertisement : public QObject
     Q_PROPERTY(bool IncludeTxPower READ getIncludeTxPower())
 
 public:
-    explicit Advertisement(QDBusConnection bus, QObject *parent = 0);
+    explicit Advertisement(QDBusConnection bus = QDBusConnection::systemBus(), QObject *parent = 0);
     QDBusObjectPath getPath();
 
 private:

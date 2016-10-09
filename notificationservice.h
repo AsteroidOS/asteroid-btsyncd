@@ -26,7 +26,7 @@ class NotificationService : public Service
 {
     Q_OBJECT
 public:
-    explicit NotificationService(QDBusConnection bus, int index, QObject *parent = 0);
+    explicit NotificationService(int index, QDBusConnection bus = QDBusConnection::systemBus(), QObject *parent = 0);
 };
 
 #endif // NOTIFICATIONSERVICE_H

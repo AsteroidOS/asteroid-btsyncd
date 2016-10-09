@@ -129,7 +129,7 @@ void MediaCommandsChrc::previousRequested()
     emit valueChanged();
 }
 
-MediaService::MediaService(QDBusConnection bus, int index, QObject *parent) : Service(bus, index, MEDIA_UUID, parent)
+MediaService::MediaService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, MEDIA_UUID, parent)
 {
     m_mprisPlayer = new MprisPlayer(this);
     m_mprisPlayer->setServiceName("asteroid-btsyncd");

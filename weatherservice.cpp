@@ -83,7 +83,7 @@ public slots:
     }
 };
 
-WeatherService::WeatherService(QDBusConnection bus, int index, QObject *parent) : Service(bus, index, WEATHER_UUID, parent)
+WeatherService::WeatherService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, WEATHER_UUID, parent)
 {
     addCharacteristic(new WeatherCityChrc(bus, 0, this));
     addCharacteristic(new WeatherIdsChrc(bus, 1, this));

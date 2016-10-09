@@ -81,7 +81,7 @@ public:
     // TODO: Feedback
 };
 
-NotificationService::NotificationService(QDBusConnection bus, int index, QObject *parent) : Service(bus, index, NOTIF_UUID, parent)
+NotificationService::NotificationService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, NOTIF_UUID, parent)
 {
     addCharacteristic(new NotificationsUpdateChrc(bus, 0, this));
     addCharacteristic(new NotificationsFeedbackChrc(bus, 1, this));

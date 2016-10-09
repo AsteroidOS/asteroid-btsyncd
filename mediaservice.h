@@ -67,7 +67,7 @@ class MediaService : public Service
 {
     Q_OBJECT
 public:
-    explicit MediaService(QDBusConnection bus, int index, QObject *parent = 0);
+    explicit MediaService(int index, QDBusConnection bus = QDBusConnection::systemBus(), QObject *parent = 0);
 
 private:
     MprisPlayer *m_mprisPlayer;

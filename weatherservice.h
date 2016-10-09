@@ -26,7 +26,7 @@ class WeatherService : public Service
 {
     Q_OBJECT
 public:
-    explicit WeatherService(QDBusConnection bus, int index, QObject *parent = 0);
+    explicit WeatherService(int index, QDBusConnection bus = QDBusConnection::systemBus(), QObject *parent = 0);
 };
 
 #endif // WEATHERSERVICE_H

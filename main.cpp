@@ -62,7 +62,7 @@ int main(int argc, char **argv)
 
     if (!bus.isConnected()) {
         fprintf(stderr, "Cannot connect to the D-Bus system bus.\n");
-        return 2;
+        return 3;
     }
     if (!QDBusConnection::sessionBus().isConnected()) {
         fprintf(stderr, "Cannot connect to the D-Bus session bus.\n");
@@ -82,9 +82,9 @@ int main(int argc, char **argv)
 
     QDBusInterface serviceManager(BLUEZ_SERVICE_NAME, adapter, GATT_MANAGER_IFACE, bus);
 
-    NotificationService notifServ(bus, 0);
-    WeatherService weatherServ(bus, 1);
-    MediaService mediaServ(bus, 2);
+    NotificationService notifServ(0);
+    WeatherService weatherServ(1);
+    MediaService mediaServ(2);
 
     serviceManager.asyncCall("RegisterService", qVariantFromValue(notifServ.getPath()), QVariantMap());
     serviceManager.asyncCall("RegisterService", qVariantFromValue(weatherServ.getPath()), QVariantMap());
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
 
     QDBusInterface adManager(BLUEZ_SERVICE_NAME, adapter, LE_ADVERTISING_MANAGER_IFACE, bus);
 
-    Advertisement advert(bus);
+    Advertisement advert;
 
     adManager.asyncCall("RegisterAdvertisement", qVariantFromValue(advert.getPath()), QVariantMap());
 
