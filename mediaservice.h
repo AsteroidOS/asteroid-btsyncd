@@ -33,17 +33,21 @@
 class MediaCommandsChrc : public Characteristic
 {
     Q_OBJECT
-    Q_PROPERTY(QByteArray value READ getValue NOTIFY valueChanged)
+    Q_PROPERTY(QByteArray Value READ getValue NOTIFY valueChanged)
 
 public:
     MediaCommandsChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
         : Characteristic(bus, index, MEDIA_COMM_UUID, {"notify"}, service), m_player(player)
     {
         m_value.resize(1);
+        connect(this, SIGNAL(valueChanged()), this, SLOT(emitPropertiesChanged()));
     }
 
 signals:
     void valueChanged();
+
+private slots:
+    void emitPropertiesChanged();
 
 private:
     MprisPlayer *m_player;

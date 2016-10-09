@@ -19,6 +19,8 @@
 #include "characteristic.h"
 #include "common.h"
 
+#include <QDebug>
+
 class MediaTitleChrc : public Characteristic
 {
 public:
@@ -127,6 +129,24 @@ void MediaCommandsChrc::previousRequested()
 {
     m_value[0] = MEDIA_COMMAND_PREVIOUS;
     emit valueChanged();
+}
+
+void MediaCommandsChrc::emitPropertiesChanged()
+{
+    QDBusConnection connection = QDBusConnection::systemBus();
+    QDBusMessage message = QDBusMessage::createSignal(getPath().path(),
+                                                      "org.freedesktop.DBus.Properties",
+                                                      "PropertiesChanged");
+
+    QVariantMap changedProperties;
+    changedProperties[QStringLiteral("Value")] = QVariant(m_value);
+
+    QList<QVariant> arguments;
+    arguments << QVariant(GATT_CHRC_IFACE) << QVariant(changedProperties) << QVariant(QStringList());
+    message.setArguments(arguments);
+
+    if (!connection.send(message))
+        qDebug() << "Failed to send DBus property notification signal";
 }
 
 MediaService::MediaService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, MEDIA_UUID, parent)
