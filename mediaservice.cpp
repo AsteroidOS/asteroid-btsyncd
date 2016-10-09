@@ -85,7 +85,7 @@ private:
 public slots:
     void WriteValue(QByteArray value)
     {
-        m_player->setPlaybackStatus(value.isNull() ? Mpris::Paused : Mpris::Playing);
+        m_player->setPlaybackStatus(value[0] ? Mpris::Playing : Mpris::Paused);
     }
 };
 
