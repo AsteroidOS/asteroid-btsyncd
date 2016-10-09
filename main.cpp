@@ -26,41 +26,13 @@
 #include "weatherservice.h"
 #include "mediaservice.h"
 #include "advertisement.h"
-
-QString findAdapter(QDBusConnection bus)
-{
-    QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, bus);
-
-    QDBusMessage result = remoteOm.call("GetManagedObjects");
-
-    const QDBusArgument argument = result.arguments().at(0).value<QDBusArgument>();
-    if (argument.currentType() == QDBusArgument::MapType) {
-        argument.beginMap();
-        while (!argument.atEnd()) {
-                QString key;
-                QList<QVariant> value;
-
-                argument.beginMapEntry();
-                argument >> key >> value;
-                argument.endMapEntry();
-
-                if (value.contains(QVariant(QString(GATT_MANAGER_IFACE)))) {
-                    return key;
-                }
-        }
-        argument.endMap();
-    }
-
-    return "";
-}
+#include "bluezmanager.h"
 
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
 
-    QDBusConnection bus = QDBusConnection::systemBus();
-
-    if (!bus.isConnected()) {
+    if (!QDBusConnection::systemBus().isConnected()) {
         fprintf(stderr, "Cannot connect to the D-Bus system bus.\n");
         return 3;
     }
@@ -68,34 +40,21 @@ int main(int argc, char **argv)
         fprintf(stderr, "Cannot connect to the D-Bus session bus.\n");
         return 2;
     }
-
-    QString adapter = findAdapter(bus);
-    if(adapter.isEmpty()) {
-        fprintf(stderr, "GattManager1 interface not found.\n");
-        return 1;
-    }
     /* if (!bus.registerService(SERVICE_NAME)) {
         fprintf(stderr, "%s\n",
                 qPrintable(QDBusConnection::systemBus().lastError().message()));
         exit(1);
     } */
 
-    QDBusInterface serviceManager(BLUEZ_SERVICE_NAME, adapter, GATT_MANAGER_IFACE, bus);
-
     NotificationService notifServ(0);
     WeatherService weatherServ(1);
     MediaService mediaServ(2);
-
-    serviceManager.asyncCall("RegisterService", qVariantFromValue(notifServ.getPath()), QVariantMap());
-    serviceManager.asyncCall("RegisterService", qVariantFromValue(weatherServ.getPath()), QVariantMap());
-    serviceManager.asyncCall("RegisterService", qVariantFromValue(mediaServ.getPath()), QVariantMap());
-
-
-    QDBusInterface adManager(BLUEZ_SERVICE_NAME, adapter, LE_ADVERTISING_MANAGER_IFACE, bus);
+    QList<QDBusObjectPath> servicesPathList;
+    servicesPathList << notifServ.getPath() << weatherServ.getPath() << mediaServ.getPath();
 
     Advertisement advert;
 
-    adManager.asyncCall("RegisterAdvertisement", qVariantFromValue(advert.getPath()), QVariantMap());
+    BlueZManager bm(servicesPathList, advert.getPath());
 
     app.exec();
     return 0;
