@@ -2,12 +2,13 @@ TEMPLATE = app
 QT -= gui
 QT += dbus
 CONFIG += link_pkgconfig c++11
-PKGCONFIG += giomm-2.4 mpris-qt5
+PKGCONFIG += giomm-2.4 mpris-qt5 contextkit-statefs
 
 HEADERS += \
     notificationservice.h \
     weatherservice.h \
     mediaservice.h \
+    batteryservice.h \
     service.h \
     characteristic.h \
     descriptor.h \
@@ -19,6 +20,7 @@ SOURCES += main.cpp \
     notificationservice.cpp \
     weatherservice.cpp \
     mediaservice.cpp \
+    batteryservice.cpp \
     service.cpp \
     characteristic.cpp \
     descriptor.cpp \

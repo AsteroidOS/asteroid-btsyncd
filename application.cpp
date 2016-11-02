@@ -19,6 +19,7 @@
 #include "notificationservice.h"
 #include "weatherservice.h"
 #include "mediaservice.h"
+#include "batteryservice.h"
 
 #include <QDBusMetaType>
 
@@ -29,6 +30,7 @@ Application::Application(QDBusConnection bus, QObject *parent) : QObject(parent)
     addService(new NotificationService(0, bus));
     addService(new WeatherService(1, bus));
     addService(new MediaService(2, bus));
+    addService(new BatteryService(3, bus));
 
     qDBusRegisterMetaType<InterfaceList>();
     qDBusRegisterMetaType<ManagedObjectList>();
