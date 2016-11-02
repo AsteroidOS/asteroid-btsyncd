@@ -51,13 +51,13 @@ QStringList Descriptor::getFlags()
 
 /* Exposed slots */
 
-QByteArray Descriptor::ReadValue()
+QByteArray Descriptor::ReadValue(QVariantMap)
 {
     fprintf(stderr, "Default ReadValue called, returning error\n");
     return QByteArray();
 }
 
-void Descriptor::WriteValue(QByteArray)
+void Descriptor::WriteValue(QByteArray, QVariantMap)
 {
     fprintf(stderr, "Default WriteValue called, returning error\n");
 }

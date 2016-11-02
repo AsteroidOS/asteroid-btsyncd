@@ -15,41 +15,38 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SERVICE_H
-#define SERVICE_H
+#ifndef APPLICATION_H
+#define APPLICATION_H
 
 #include <QObject>
 #include <QDBusConnection>
-#include <QDBusObjectPath>
-#include <QDBusAbstractAdaptor>
 #include <QList>
 #include <QString>
 
-#include "characteristic.h"
+#include "service.h"
 #include "common.h"
 
-class Service : public QObject
+typedef QMap<QString, QVariantMap> InterfaceList;
+typedef QMap<QDBusObjectPath, InterfaceList> ManagedObjectList;
+Q_DECLARE_METATYPE(InterfaceList)
+Q_DECLARE_METATYPE(ManagedObjectList)
+
+class Application : public QObject
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", GATT_SERVICE_IFACE)
-    Q_PROPERTY(QString UUID READ getUuid())
-    Q_PROPERTY(bool Primary READ getPrimary())
-    Q_PROPERTY(QList<QDBusObjectPath>  Characteristics READ getCharacteristicPaths())
+    Q_CLASSINFO("D-Bus Interface", DBUS_OM_IFACE)
 
 public:
-    explicit Service(QDBusConnection bus, unsigned int index, QString uuid, QObject *parent = 0);
+    Application(QDBusConnection bus = QDBusConnection::systemBus(), QObject *parent = 0);
     QDBusObjectPath getPath();
-    void addCharacteristic(Characteristic *charac);
-    QList<QDBusObjectPath> getCharacteristicPaths();
-    QList<Characteristic *> getCharacteristics();
-
-    QString getUuid();
-    bool getPrimary();
+    void addService(Service *service);
 
 private:
-    QDBusConnection mBus;
-    QString mPath, mUuid;
-    QList<Characteristic *> mCharacteristics;
+    QString mPath;
+    QList<Service *> mServices;
+
+public slots:
+    ManagedObjectList GetManagedObjects();
 };
 
-#endif // SERVICE_H
+#endif // APPLICATION_H

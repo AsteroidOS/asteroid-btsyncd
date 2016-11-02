@@ -25,8 +25,8 @@
 
 #include "common.h"
 
-BlueZManager::BlueZManager(QList<QDBusObjectPath> servicesPathList, QDBusObjectPath advertPath, QObject *parent)
-    : QObject(parent), mServicesPathList(servicesPathList), mAdvertPath(advertPath), mAdapter("adapter"), mBus(QDBusConnection::systemBus())
+BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QObject *parent)
+    : QObject(parent), mAppPath(appPath), mAdvertPath(advertPath), mAdapter("adapter"), mBus(QDBusConnection::systemBus())
 {
     mWatcher = new QDBusServiceWatcher(BLUEZ_SERVICE_NAME, QDBusConnection::systemBus());
     connect(mWatcher, SIGNAL(serviceRegistered(const QString&)), this, SLOT(serviceRegistered(const QString&)));
@@ -105,10 +105,8 @@ void BlueZManager::onAdapterChanged()
         qDebug() << "BLE Adapter" << mAdapter << "found";
 
         QDBusInterface serviceManager(BLUEZ_SERVICE_NAME, mAdapter, GATT_MANAGER_IFACE, mBus);
-        foreach(QDBusObjectPath path, mServicesPathList) {
-            serviceManager.asyncCall("RegisterService", qVariantFromValue(path), QVariantMap());
-            qDebug() << "Service" << path.path() << "registered";
-        }
+        serviceManager.asyncCall("RegisterApplication", qVariantFromValue(mAppPath), QVariantMap());
+        qDebug() << "Service" << mAppPath.path() << "registered";
 
         QDBusInterface adManager(BLUEZ_SERVICE_NAME, mAdapter, LE_ADVERTISING_MANAGER_IFACE, mBus);
         adManager.asyncCall("RegisterAdvertisement", qVariantFromValue(mAdvertPath), QVariantMap());

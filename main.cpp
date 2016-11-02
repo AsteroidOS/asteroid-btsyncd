@@ -22,15 +22,13 @@
 #include <QtDBus/QtDBus>
 
 #include "common.h"
-#include "notificationservice.h"
-#include "weatherservice.h"
-#include "mediaservice.h"
+#include "application.h"
 #include "advertisement.h"
 #include "bluezmanager.h"
 
 int main(int argc, char **argv)
 {
-    QCoreApplication app(argc, argv);
+    QCoreApplication qcoreapp(argc, argv);
 
     if (!QDBusConnection::systemBus().isConnected()) {
         fprintf(stderr, "Cannot connect to the D-Bus system bus.\n");
@@ -46,16 +44,10 @@ int main(int argc, char **argv)
         exit(1);
     } */
 
-    NotificationService notifServ(0);
-    WeatherService weatherServ(1);
-    MediaService mediaServ(2);
-    QList<QDBusObjectPath> servicesPathList;
-    servicesPathList << notifServ.getPath() << weatherServ.getPath() << mediaServ.getPath();
-
+    Application app;
     Advertisement advert;
+    BlueZManager bm(app.getPath(), advert.getPath());
 
-    BlueZManager bm(servicesPathList, advert.getPath());
-
-    app.exec();
+    qcoreapp.exec();
     return 0;
 }

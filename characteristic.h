@@ -60,8 +60,8 @@ private:
 
 
 public slots:
-    virtual QByteArray ReadValue();
-    virtual void WriteValue(QByteArray value);
+    virtual QByteArray ReadValue(QVariantMap options);
+    virtual void WriteValue(QByteArray value, QVariantMap options);
     virtual void StartNotify();
     virtual void StopNotify();
 };

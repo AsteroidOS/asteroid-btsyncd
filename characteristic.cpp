@@ -70,13 +70,13 @@ QStringList Characteristic::getFlags()
 
 /* Exposed slots */
 
-QByteArray Characteristic::ReadValue()
+QByteArray Characteristic::ReadValue(QVariantMap)
 {
     fprintf(stderr, "Default ReadValue called\n");
     return QByteArray();
 }
 
-void Characteristic::WriteValue(QByteArray)
+void Characteristic::WriteValue(QByteArray, QVariantMap)
 {
     fprintf(stderr, "Default WriteValue called\n");
 }

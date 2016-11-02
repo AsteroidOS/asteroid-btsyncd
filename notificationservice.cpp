@@ -28,7 +28,7 @@ public:
     NotificationsUpdateChrc(QDBusConnection bus, unsigned int index, Service *service) : Characteristic(bus, index, NOTI_UPD_UUID, {"write"}, service, service) {}
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         QString packageName, id, appName, appIcon, summary, body;
 

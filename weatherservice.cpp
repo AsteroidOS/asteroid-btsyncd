@@ -28,7 +28,7 @@ public:
     WeatherCityChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_CITY_UUID, {"write"}, service) {}
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather");
         settings->set_string("city-name", value.data());
@@ -41,7 +41,7 @@ public:
     WeatherIdsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_IDS_UUID, {"write"}, service) {}
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
@@ -59,7 +59,7 @@ public:
     WeatherMinTempsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_MINT_UUID, {"write"}, service) {}
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
@@ -74,7 +74,7 @@ public:
     WeatherMaxTempsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_MAXT_UUID, {"write"}, service) {}
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));

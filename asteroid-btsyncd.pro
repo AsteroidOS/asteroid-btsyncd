@@ -12,6 +12,7 @@ HEADERS += \
     characteristic.h \
     descriptor.h \
     common.h \
+    application.h \
     advertisement.h \
     bluezmanager.h
 SOURCES += main.cpp \
@@ -21,6 +22,7 @@ SOURCES += main.cpp \
     service.cpp \
     characteristic.cpp \
     descriptor.cpp \
+    application.cpp \
     advertisement.cpp \
     bluezmanager.cpp
 

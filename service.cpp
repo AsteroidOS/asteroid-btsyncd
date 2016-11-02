@@ -18,18 +18,11 @@
 #include "service.h"
 #include "common.h"
 
-#include <QDBusMetaType>
-
 Service::Service(QDBusConnection bus, unsigned int index, QString uuid, QObject *parent) : QObject(parent), mBus(QDBusConnection::systemBus())
 {
     mPath = SERVICE_PATH_BASE + QString::number(index);
     mBus = bus;
     mUuid = uuid;
-
-    mOmIface = new ServiceOmIface(this);
-
-    qDBusRegisterMetaType<InterfaceList>();
-    qDBusRegisterMetaType<ManagedObjectList>();
 
     bus.registerObject(mPath, this, QDBusConnection::ExportAdaptors | QDBusConnection::ExportAllProperties);
 }
@@ -67,41 +60,3 @@ bool Service::getPrimary()
     return true;
 }
 
-/* Exposed slots */
-ManagedObjectList ServiceOmIface::GetManagedObjects()
-{
-    ManagedObjectList response;
-
-    InterfaceList serviceInterfaces;
-    QVariantMap serviceProperties;
-    serviceProperties.insert("UUID", mService->getUuid());
-    serviceProperties.insert("Primary", mService->getPrimary());
-    serviceProperties.insert("Characteristics", qVariantFromValue(mService->getCharacteristicPaths()));
-    serviceInterfaces.insert(GATT_SERVICE_IFACE, serviceProperties);
-    response.insert(mService->getPath(), serviceInterfaces);
-
-    QList<Characteristic *> chrcs = mService->getCharacteristics();
-    foreach(Characteristic *chrc, chrcs) {
-        InterfaceList chrcInterfaces;
-        QVariantMap chrcProperties;
-        chrcProperties.insert("Service", qVariantFromValue(chrc->getService()));
-        chrcProperties.insert("UUID", chrc->getUuid());
-        chrcProperties.insert("Flags", chrc->getFlags());
-        chrcProperties.insert("Descriptors", qVariantFromValue(chrc->getDescriptorPaths()));
-        chrcInterfaces.insert(GATT_CHRC_IFACE, chrcProperties);
-        response.insert(chrc->getPath(), chrcInterfaces);
-
-        QList<Descriptor *> descs = chrc->getDescriptors();
-        foreach(Descriptor *desc, descs) {
-            InterfaceList descInterfaces;
-            QVariantMap descProperties;
-            descProperties.insert("UUID", desc->getUuid());
-            descProperties.insert("Characteristic", qVariantFromValue(desc->getCharacteristic()));
-            descProperties.insert("Flags", desc->getFlags());
-            descInterfaces.insert(GATT_DESC_IFACE, descProperties);
-            response.insert(desc->getPath(), descInterfaces);
-        }
-    }
-
-    return response;
-}

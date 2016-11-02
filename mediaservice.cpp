@@ -31,7 +31,7 @@ private:
     MprisPlayer *m_player;
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         QVariantMap metadata = m_player->metadata();
         metadata[Mpris::metadataToString(Mpris::Title)] = QString(value);
@@ -49,7 +49,7 @@ private:
     MprisPlayer *m_player;
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         QVariantMap metadata = m_player->metadata();
         metadata[Mpris::metadataToString(Mpris::Album)] = QString(value);
@@ -67,7 +67,7 @@ private:
     MprisPlayer *m_player;
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         QVariantMap metadata = m_player->metadata();
         metadata[Mpris::metadataToString(Mpris::Artist)] = QString(value);
@@ -85,7 +85,7 @@ private:
     MprisPlayer *m_player;
 
 public slots:
-    void WriteValue(QByteArray value)
+    void WriteValue(QByteArray value, QVariantMap)
     {
         m_player->setPlaybackStatus(value[0] ? Mpris::Playing : Mpris::Paused);
     }

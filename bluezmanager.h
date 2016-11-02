@@ -29,11 +29,10 @@ class BlueZManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit BlueZManager(QList<QDBusObjectPath> servicesPathList, QDBusObjectPath advertPath, QObject *parent = 0);
+    explicit BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QObject *parent = 0);
 
 private:
-    QList<QDBusObjectPath> mServicesPathList;
-    QDBusObjectPath mAdvertPath;
+    QDBusObjectPath mAppPath, mAdvertPath;
     QString mAdapter;
     QDBusServiceWatcher *mWatcher;
     QDBusConnection mBus;
