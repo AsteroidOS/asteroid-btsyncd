@@ -65,6 +65,9 @@ public slots:
     void stopRequested();
     void nextRequested();
     void previousRequested();
+
+    void StartNotify() {}
+    void StopNotify() {}
 };
 
 class MediaService : public Service
