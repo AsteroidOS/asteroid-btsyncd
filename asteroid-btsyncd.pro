@@ -31,7 +31,7 @@ SOURCES += main.cpp \
 TARGET = asteroid-btsyncd
 target.path = /usr/bin/
 
-schemas = org.asteroidos.weather.gschema.xml
+schemas.files = org.asteroidos.weather.gschema.xml
 schemas.path = /usr/share/glib-2.0/schemas/
 
 INSTALLS += target schemas
