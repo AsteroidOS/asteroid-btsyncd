@@ -68,7 +68,7 @@ public slots:
         argumentList << body;
         argumentList << QStringList(); // actions
         argumentList << hints;
-        argumentList << (int) 3000;    // timeout
+        argumentList << (int) 0;    // timeout
 
         static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
         QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
