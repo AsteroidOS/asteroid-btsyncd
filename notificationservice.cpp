@@ -58,6 +58,7 @@ public slots:
         QVariantMap hints;
         hints.insert("x-nemo-preview-body", body);
         hints.insert("x-nemo-preview-summary", summary);
+        hints.insert("x-nemo-feedback", "information_strong");
         hints.insert("urgency", 3);
 
         QList<QVariant> argumentList;
