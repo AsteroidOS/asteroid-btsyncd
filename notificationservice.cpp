@@ -25,20 +25,23 @@
 class NotificationsUpdateChrc : public Characteristic
 {
 public:
-    NotificationsUpdateChrc(QDBusConnection bus, unsigned int index, Service *service) : Characteristic(bus, index, NOTI_UPD_UUID, {"write"}, service, service) {}
+    NotificationsUpdateChrc(QDBusConnection bus, unsigned int index, QHash<int, uint> *knownAndroidNotifs, Service *service)
+      : Characteristic(bus, index, NOTI_UPD_UUID, {"write"}, service, service), mKnownAndroidNotifs(knownAndroidNotifs) {}
 
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
-        QString packageName, id, appName, appIcon, summary, body;
+        int id;
+        uint replacesId;
+        QString packageName, appName, appIcon, summary, body;
 
         QXmlStreamReader reader(value);
 
         if(reader.readNextStartElement()) {
-            if(reader.name() == "insert"){
+            if(reader.name() == "insert") {
                 while(reader.readNextStartElement()) {
                     if(reader.name() == "pn") packageName = reader.readElementText();
-                    else if(reader.name() == "id") id = reader.readElementText();
+                    else if(reader.name() == "id") id = reader.readElementText().toInt();
                     else if(reader.name() == "an") appName = reader.readElementText();
                     else if(reader.name() == "ai") appIcon = reader.readElementText();
                     else if(reader.name() == "su") summary = reader.readElementText();
@@ -50,6 +53,8 @@ public slots:
                 reader.raiseError("Incorrect root node");
         }
 
+        replacesId = mKnownAndroidNotifs->value(id, 0);
+
         QVariantMap hints;
         hints.insert("x-nemo-preview-body", body);
         hints.insert("x-nemo-preview-summary", summary);
@@ -57,7 +62,7 @@ public slots:
 
         QList<QVariant> argumentList;
         argumentList << appName;
-        argumentList << (uint)0;       // replace ID
+        argumentList << replacesId;
         argumentList << appIcon;
         argumentList << summary;
         argumentList << body;
@@ -70,19 +75,38 @@ public slots:
         if(reply.type() == QDBusMessage::ErrorMessage) {
             fprintf(stderr, "NotificationsUpdateChrc::writeValue: D-Bus Error: %s\n", reply.errorMessage().toStdString().c_str());
         }
+
+        if(!replacesId) {
+            if(reply.arguments().size() > 0)
+                mKnownAndroidNotifs->insert(id, reply.arguments()[0].toUInt());
+        }
     }
+
+private:
+    QHash<int, uint> *mKnownAndroidNotifs;
 };
 
 class NotificationsFeedbackChrc : public Characteristic
 {
 public:
-    NotificationsFeedbackChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, NOTI_FDB_UUID, {"notify"}, service) {}
-
+    NotificationsFeedbackChrc(QDBusConnection bus, int index, QHash<int, uint> *knownAndroidNotifs, Service *service)
+         : Characteristic(bus, index, NOTI_FDB_UUID, {"notify"}, service), mKnownAndroidNotifs(knownAndroidNotifs)
+    {}
     // TODO: Feedback
+private:
+    QHash<int, uint> *mKnownAndroidNotifs;
 };
 
 NotificationService::NotificationService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, NOTIF_UUID, parent)
 {
-    addCharacteristic(new NotificationsUpdateChrc(bus, 0, this));
-    addCharacteristic(new NotificationsFeedbackChrc(bus, 1, this));
+    addCharacteristic(new NotificationsUpdateChrc(bus, 0, &mKnownAndroidNotifs, this));
+    addCharacteristic(new NotificationsFeedbackChrc(bus, 1, &mKnownAndroidNotifs, this));
+    QDBusConnection::sessionBus().connect(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE,
+        NOTIFICATIONS_MAIN_IFACE, "NotificationClosed", this, SLOT(NotificationClosed(uint, uint)));
+}
+
+void NotificationService::NotificationClosed(uint replacesId, uint) {
+    int id = mKnownAndroidNotifs.key(replacesId, 0);
+    if(id)
+        mKnownAndroidNotifs.remove(id);
 }

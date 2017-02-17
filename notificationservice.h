@@ -27,6 +27,12 @@ class NotificationService : public Service
     Q_OBJECT
 public:
     explicit NotificationService(int index, QDBusConnection bus, QObject *parent = 0);
+
+private slots:
+    void NotificationClosed(uint replacesId, uint);
+
+private:
+    QHash<int, uint> mKnownAndroidNotifs;
 };
 
 #endif // NOTIFICATIONSERVICE_H
