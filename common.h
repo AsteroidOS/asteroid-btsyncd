@@ -34,6 +34,10 @@
 #define SERVICE_PATH_BASE            "/org/asteroidos/btsyncd/service"
 #define ADVERTISEMENT_PATH_BASE      "/org/asteroidos/btsyncd/advertisement"
 
+#define NOTIFICATIONS_SERVICE_NAME   "org.freedesktop.Notifications"
+#define NOTIFICATIONS_MAIN_IFACE     "org.freedesktop.Notifications"
+#define NOTIFICATIONS_PATH_BASE      "/org/freedesktop/Notifications"
+
 /* GATT Services and Characteristics UUIDs */
 
 #define MEDIA_UUID        "00007071-0000-0000-0000-00A57E401D05"
