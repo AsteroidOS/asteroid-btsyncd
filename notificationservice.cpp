@@ -35,56 +35,57 @@ public slots:
         uint replacesId;
         QString packageName, appName, appIcon, summary, body;
 
-        QXmlStreamReader reader(value);
+        mReader.addData(value);
 
-        if(reader.readNextStartElement()) {
-            if(reader.name() == "insert") {
-                while(reader.readNextStartElement()) {
-                    if(reader.name() == "pn") packageName = reader.readElementText();
-                    else if(reader.name() == "id") id = reader.readElementText().toInt();
-                    else if(reader.name() == "an") appName = reader.readElementText();
-                    else if(reader.name() == "ai") appIcon = reader.readElementText();
-                    else if(reader.name() == "su") summary = reader.readElementText();
-                    else if(reader.name() == "bo") body = reader.readElementText();
-                    else reader.skipCurrentElement();
+        if(value.endsWith("</insert>")) {
+            if(mReader.readNextStartElement() && mReader.name() == "insert") {
+                while(mReader.readNextStartElement()) {
+                    if(mReader.name() == "pn") packageName = mReader.readElementText();
+                    else if(mReader.name() == "id") id = mReader.readElementText().toInt();
+                    else if(mReader.name() == "an") appName = mReader.readElementText();
+                    else if(mReader.name() == "ai") appIcon = mReader.readElementText();
+                    else if(mReader.name() == "su") summary = mReader.readElementText();
+                    else if(mReader.name() == "bo") body = mReader.readElementText();
+                    else mReader.skipCurrentElement();
                 }
-            }
-            else
-                reader.raiseError("Incorrect root node");
-        }
+                mReader.clear();
 
-        replacesId = mKnownAndroidNotifs->value(id, 0);
+                replacesId = mKnownAndroidNotifs->value(id, 0);
 
-        QVariantMap hints;
-        hints.insert("x-nemo-preview-body", body);
-        hints.insert("x-nemo-preview-summary", summary);
-        hints.insert("x-nemo-feedback", "information_strong");
-        hints.insert("urgency", 3);
+                QVariantMap hints;
+                hints.insert("x-nemo-preview-body", body);
+                hints.insert("x-nemo-preview-summary", summary);
+                hints.insert("x-nemo-feedback", "information_strong");
+                hints.insert("urgency", 3);
 
-        QList<QVariant> argumentList;
-        argumentList << appName;
-        argumentList << replacesId;
-        argumentList << appIcon;
-        argumentList << summary;
-        argumentList << body;
-        argumentList << QStringList(); // actions
-        argumentList << hints;
-        argumentList << (int) 0;    // timeout
+                QList<QVariant> argumentList;
+                argumentList << appName;
+                argumentList << replacesId;
+                argumentList << appIcon;
+                argumentList << summary;
+                argumentList << body;
+                argumentList << QStringList(); // actions
+                argumentList << hints;
+                argumentList << (int) 0;    // timeout
 
-        static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
-        QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
-        if(reply.type() == QDBusMessage::ErrorMessage) {
-            fprintf(stderr, "NotificationsUpdateChrc::writeValue: D-Bus Error: %s\n", reply.errorMessage().toStdString().c_str());
-        }
+                static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
+                QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
+                if(reply.type() == QDBusMessage::ErrorMessage) {
+                    fprintf(stderr, "NotificationsUpdateChrc::writeValue: D-Bus Error: %s\n", reply.errorMessage().toStdString().c_str());
+                }
 
-        if(!replacesId) {
-            if(reply.arguments().size() > 0)
-                mKnownAndroidNotifs->insert(id, reply.arguments()[0].toUInt());
+                if(!replacesId) {
+                    if(reply.arguments().size() > 0)
+                        mKnownAndroidNotifs->insert(id, reply.arguments()[0].toUInt());
+                }
+            } else
+                mReader.clear();
         }
     }
 
 private:
     QHash<int, uint> *mKnownAndroidNotifs;
+    QXmlStreamReader mReader;
 };
 
 class NotificationsFeedbackChrc : public Characteristic
