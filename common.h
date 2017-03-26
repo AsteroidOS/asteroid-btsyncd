@@ -38,6 +38,10 @@
 #define NOTIFICATIONS_MAIN_IFACE     "org.freedesktop.Notifications"
 #define NOTIFICATIONS_PATH_BASE      "/org/freedesktop/Notifications"
 
+#define SCREENSHOT_SERVICE_NAME      "org.nemomobile.lipstick"
+#define SCREENSHOT_MAIN_IFACE        "org.nemomobile.lipstick"
+#define SCREENSHOT_PATH_BASE         "/org/nemomobile/lipstick/screenshot"
+
 /* GATT Services and Characteristics UUIDs */
 
 #define MEDIA_UUID        "00007071-0000-0000-0000-00A57E401D05"
@@ -59,5 +63,9 @@
 
 #define BATTERY_UUID      "0000180F-0000-1000-8000-00805f9b34fb"
 #define BATTERY_LVL_UUID  "00002a19-0000-1000-8000-00805f9b34fb"
+
+#define SCREENSH_UUID     "00006071-0000-0000-0000-00A57E401D05"
+#define SCREENSH_REQ_UUID "00006001-0000-0000-0000-00A57E401D05"
+#define SCREENSH_CON_UUID "00006002-0000-0000-0000-00A57E401D05"
 
 #endif // COMMON_H

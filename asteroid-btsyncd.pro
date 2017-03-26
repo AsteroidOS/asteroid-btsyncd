@@ -9,6 +9,7 @@ HEADERS += \
     weatherservice.h \
     mediaservice.h \
     batteryservice.h \
+    screenshotservice.h \
     service.h \
     characteristic.h \
     descriptor.h \
@@ -21,6 +22,7 @@ SOURCES += main.cpp \
     weatherservice.cpp \
     mediaservice.cpp \
     batteryservice.cpp \
+    screenshotservice.cpp \
     service.cpp \
     characteristic.cpp \
     descriptor.cpp \
