@@ -2,7 +2,7 @@ TEMPLATE = app
 QT -= gui
 QT += dbus
 CONFIG += link_pkgconfig c++11
-PKGCONFIG += giomm-2.4 mpris-qt5 contextkit-statefs
+PKGCONFIG += giomm-2.4 mpris-qt5 contextkit-statefs timed-qt5
 
 HEADERS += \
     notificationservice.h \
@@ -10,6 +10,7 @@ HEADERS += \
     mediaservice.h \
     batteryservice.h \
     screenshotservice.h \
+    timeservice.h \
     service.h \
     characteristic.h \
     descriptor.h \
@@ -23,6 +24,7 @@ SOURCES += main.cpp \
     mediaservice.cpp \
     batteryservice.cpp \
     screenshotservice.cpp \
+    timeservice.cpp \
     service.cpp \
     characteristic.cpp \
     descriptor.cpp \
