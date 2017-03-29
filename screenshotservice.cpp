@@ -56,7 +56,7 @@ void ScreenshotContentChrc::onScreenshotTaken(QString path)
     emitPropertiesChanged();
 
     while (!f.atEnd()) {
-        m_value = f.read(20);
+        m_value = f.read(200);
         emit valueChanged();
         emitPropertiesChanged();
     }
