@@ -26,6 +26,7 @@
 #define DBUS_OM_IFACE                "org.freedesktop.DBus.ObjectManager"
 #define LE_ADVERTISING_MANAGER_IFACE "org.bluez.LEAdvertisingManager1"
 #define LE_ADVERTISEMENT_IFACE       "org.bluez.LEAdvertisement1"
+#define AGENT_MANAGER_IFACE          "org.bluez.AgentManager1"
 
 #define GATT_SERVICE_IFACE           "org.bluez.GattService1"
 #define GATT_CHRC_IFACE              "org.bluez.GattCharacteristic1"
@@ -33,6 +34,9 @@
 
 #define SERVICE_PATH_BASE            "/org/asteroidos/btsyncd/service"
 #define ADVERTISEMENT_PATH_BASE      "/org/asteroidos/btsyncd/advertisement"
+#define AGENT_PATH_BASE              "/org/asteroidos/btsyncd/agent"
+
+#define AGENT_CAPABILITY             "KeyboardDisplay"
 
 #define NOTIFICATIONS_SERVICE_NAME   "org.freedesktop.Notifications"
 #define NOTIFICATIONS_MAIN_IFACE     "org.freedesktop.Notifications"

@@ -23,6 +23,7 @@
 
 #include "common.h"
 #include "application.h"
+#include "agent.h"
 #include "advertisement.h"
 #include "bluezmanager.h"
 
@@ -46,7 +47,8 @@ int main(int argc, char **argv)
 
     Application app;
     Advertisement advert;
-    BlueZManager bm(app.getPath(), advert.getPath());
+    Agent agent;
+    BlueZManager bm(app.getPath(), advert.getPath(), agent.getPath());
 
     qcoreapp.exec();
     return 0;
