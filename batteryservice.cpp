@@ -30,13 +30,14 @@ BatteryLvlChrc::BatteryLvlChrc(QDBusConnection bus, int index, Service *service)
     m_battery = new ContextProperty("Battery.ChargePercentage", this);
     connect(m_battery, SIGNAL(valueChanged()), this, SLOT(onBatteryPercentageChanged()));
     connect(this, SIGNAL(valueChanged()), this, SLOT(emitPropertiesChanged()));
-    m_value = QByteArray::number(100);
+    m_value = QByteArray(1, 100);
     QTimer::singleShot(0, this, SLOT(onBatteryPercentageChanged()));
 }
 
 void BatteryLvlChrc::onBatteryPercentageChanged()
 {
-    m_value = QByteArray::number(m_battery->value().toUInt());
+    char val = m_battery->value().toUInt();
+    m_value = QByteArray(1, val);
 
     emit valueChanged();
 }
