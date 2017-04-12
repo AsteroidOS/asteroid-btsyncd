@@ -30,16 +30,19 @@ class BlueZManager : public QObject
     Q_OBJECT
 public:
     explicit BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QDBusObjectPath agentPath, QObject *parent = 0);
+    void updateConnected();
 
 private:
+    bool mConnected;
     QDBusObjectPath mAppPath, mAdvertPath, mAgentPath;
-    QString mAdapter;
+    QString mAdapter, mConnectedDevice;
     QDBusServiceWatcher *mWatcher;
     QDBusConnection mBus;
 
     void updateAdapter();
 
 signals:
+    void connectedChanged();
     void adapterChanged();
 
 public slots:
@@ -47,7 +50,9 @@ public slots:
     void serviceUnregistered(const QString& name);
     void InterfacesAdded(QDBusObjectPath, InterfaceList);
     void InterfacesRemoved(QDBusObjectPath, QStringList);
+    void PropertiesChanged(QString, QMap<QString, QVariant>, QStringList);
 
+    void onConnectedChanged();
     void onAdapterChanged();
 };
 

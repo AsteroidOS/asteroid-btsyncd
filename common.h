@@ -23,7 +23,9 @@
 
 #define BLUEZ_SERVICE_NAME           "org.bluez"
 #define GATT_MANAGER_IFACE           "org.bluez.GattManager1"
+#define DEVICE_MANAGER_IFACE         "org.bluez.Device1"
 #define DBUS_OM_IFACE                "org.freedesktop.DBus.ObjectManager"
+#define DBUS_PROPERTIES_IFACE        "org.freedesktop.DBus.Properties"
 #define LE_ADVERTISING_MANAGER_IFACE "org.bluez.LEAdvertisingManager1"
 #define LE_ADVERTISEMENT_IFACE       "org.bluez.LEAdvertisement1"
 #define AGENT_MANAGER_IFACE          "org.bluez.AgentManager1"

@@ -28,11 +28,15 @@
 BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QDBusObjectPath agentPath, QObject *parent)
     : QObject(parent), mAppPath(appPath), mAdvertPath(advertPath), mAgentPath(agentPath), mAdapter("adapter"), mBus(QDBusConnection::systemBus())
 {
+    mConnected = false;
+    mConnectedDevice = "";
+
     mWatcher = new QDBusServiceWatcher(BLUEZ_SERVICE_NAME, QDBusConnection::systemBus());
     connect(mWatcher, SIGNAL(serviceRegistered(const QString&)), this, SLOT(serviceRegistered(const QString&)));
     connect(mWatcher, SIGNAL(serviceUnregistered(const QString&)), this, SLOT(serviceUnregistered(const QString&)));
 
     connect(this, SIGNAL(adapterChanged()), this, SLOT(onAdapterChanged()));
+    connect(this, SIGNAL(connectedChanged()), this, SLOT(onConnectedChanged()));
 
     QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, mBus);
     if(remoteOm.isValid())
@@ -54,7 +58,16 @@ void BlueZManager::serviceRegistered(const QString& name)
 void BlueZManager::serviceUnregistered(const QString& name)
 {
     qDebug() << "Service" << name << "is not running";
-    mAdapter = "adapter";
+    if(mAdapter != "adapter") {
+        mAdapter = "adapter";
+        emit adapterChanged();
+    }
+
+    if(mConnected) {
+        mConnected = false;
+        mConnectedDevice = "";
+        emit connectedChanged();
+    }
 }
 
 void BlueZManager::InterfacesAdded(QDBusObjectPath, InterfaceList)
@@ -69,6 +82,7 @@ void BlueZManager::InterfacesRemoved(QDBusObjectPath, QStringList)
 
 void BlueZManager::updateAdapter() {
     QString adapter = "";
+    bool connected = false;
 
     QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, mBus);
     QDBusMessage result = remoteOm.call("GetManagedObjects");
@@ -77,17 +91,25 @@ void BlueZManager::updateAdapter() {
     if (argument.currentType() == QDBusArgument::MapType) {
         argument.beginMap();
         while (!argument.atEnd()) {
-                QString key;
-                QList<QVariant> value;
+            QString key;
+            InterfaceList value;
 
-                argument.beginMapEntry();
-                argument >> key >> value;
-                argument.endMapEntry();
+            argument.beginMapEntry();
+            argument >> key >> value;
+            argument.endMapEntry();
 
-                if (value.contains(QVariant(QString(GATT_MANAGER_IFACE))) && value.contains(QVariant(QString(LE_ADVERTISING_MANAGER_IFACE)))) {
-                    adapter = key;
-                    break;
-                }
+            if (value.contains(GATT_MANAGER_IFACE) && value.contains(LE_ADVERTISING_MANAGER_IFACE))
+                adapter = key;
+
+            if (value.contains(DEVICE_MANAGER_IFACE)) {
+                 mBus.connect(BLUEZ_SERVICE_NAME, key, DBUS_PROPERTIES_IFACE, "PropertiesChanged", this, SLOT(PropertiesChanged(QString, QMap<QString, QVariant>, QStringList)));
+                 QMap<QString, QVariant> properties = value.value(DEVICE_MANAGER_IFACE);
+                 if(properties.contains("Connected"))
+                    connected |= properties.value("Connected").toBool();
+
+                 if(properties.contains("Alias"))
+                    mConnectedDevice = properties.value("Alias").toString();;
+            }
         }
         argument.endMap();
     }
@@ -95,6 +117,11 @@ void BlueZManager::updateAdapter() {
     if(adapter != mAdapter) {
         mAdapter = adapter;
         emit adapterChanged();
+    }
+
+    if(connected != mConnected) {
+        mConnected = connected;
+        emit connectedChanged();
     }
 }
 
@@ -118,4 +145,44 @@ void BlueZManager::onAdapterChanged()
     }
     else
         qDebug() << "No BLE adapter found";
+}
+
+void BlueZManager::PropertiesChanged(QString, QMap<QString, QVariant>, QStringList)
+{
+    updateAdapter();
+}
+
+void BlueZManager::onConnectedChanged()
+{
+    QString appName, appIcon, summary, body;
+    appName = "asteroid-btsyncd";
+
+    if(mConnected) {
+        summary = tr("Connected");
+        body = mConnectedDevice;
+        appIcon = "ios-bluetooth-outline";
+    } else {
+        summary = tr("Disconnected");
+        body = "";
+        appIcon = "ios-bluetooth-off-outline";
+    }
+
+    QVariantMap hints;
+    hints.insert("x-nemo-preview-body", body);
+    hints.insert("x-nemo-preview-summary", summary);
+    hints.insert("x-nemo-feedback", "information_strong");
+    hints.insert("urgency", 3);
+
+    QList<QVariant> argumentList;
+    argumentList << appName;
+    argumentList << (uint) 0;
+    argumentList << appIcon;
+    argumentList << summary;
+    argumentList << body;
+    argumentList << QStringList();
+    argumentList << hints;
+    argumentList << (int) 0;
+
+    static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
+    notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
 }
