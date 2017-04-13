@@ -17,8 +17,7 @@ HEADERS += \
     common.h \
     application.h \
     advertisement.h \
-    bluezmanager.h \
-    agent.h
+    bluezmanager.h
 SOURCES += main.cpp \
     notificationservice.cpp \
     weatherservice.cpp \
@@ -31,8 +30,7 @@ SOURCES += main.cpp \
     descriptor.cpp \
     application.cpp \
     advertisement.cpp \
-    bluezmanager.cpp \
-    agent.cpp
+    bluezmanager.cpp
 
 TARGET = asteroid-btsyncd
 target.path = /usr/bin/

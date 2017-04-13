@@ -25,8 +25,8 @@
 
 #include "common.h"
 
-BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QDBusObjectPath agentPath, QObject *parent)
-    : QObject(parent), mAppPath(appPath), mAdvertPath(advertPath), mAgentPath(agentPath), mAdapter("adapter"), mBus(QDBusConnection::systemBus())
+BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QObject *parent)
+    : QObject(parent), mAppPath(appPath), mAdvertPath(advertPath), mAdapter("adapter"), mBus(QDBusConnection::systemBus())
 {
     mConnected = false;
     mConnectedDevice = "";
@@ -138,10 +138,6 @@ void BlueZManager::onAdapterChanged()
         QDBusInterface adManager(BLUEZ_SERVICE_NAME, mAdapter, LE_ADVERTISING_MANAGER_IFACE, mBus);
         adManager.asyncCall("RegisterAdvertisement", qVariantFromValue(mAdvertPath), QVariantMap());
         qDebug() << "Advertisement" << mAdvertPath.path() << "registered";
-
-        QDBusInterface agentManager(BLUEZ_SERVICE_NAME, mAdapter, AGENT_MANAGER_IFACE, mBus);
-        agentManager.asyncCall("RegisterAgent", qVariantFromValue(mAgentPath), AGENT_CAPABILITY);
-        qDebug() << "Agent" << mAgentPath.path() << "registered";
     }
     else
         qDebug() << "No BLE adapter found";

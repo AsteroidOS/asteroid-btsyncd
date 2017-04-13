@@ -29,12 +29,12 @@ class BlueZManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QDBusObjectPath agentPath, QObject *parent = 0);
+    explicit BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, QObject *parent = 0);
     void updateConnected();
 
 private:
     bool mConnected;
-    QDBusObjectPath mAppPath, mAdvertPath, mAgentPath;
+    QDBusObjectPath mAppPath, mAdvertPath;
     QString mAdapter, mConnectedDevice;
     QDBusServiceWatcher *mWatcher;
     QDBusConnection mBus;
