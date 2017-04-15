@@ -25,7 +25,7 @@ class MediaTitleChrc : public Characteristic
 {
 public:
     MediaTitleChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
-        : Characteristic(bus, index, MEDIA_TITLE_UUID, {"write"}, service), m_player(player) {}
+        : Characteristic(bus, index, MEDIA_TITLE_UUID, {"encrypt-authenticated-write"}, service), m_player(player) {}
 
 private:
     MprisPlayer *m_player;
@@ -43,7 +43,7 @@ class MediaAlbumChrc : public Characteristic
 {
 public:
     MediaAlbumChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
-        : Characteristic(bus, index, MEDIA_ALBUM_UUID, {"write"}, service), m_player(player) {}
+        : Characteristic(bus, index, MEDIA_ALBUM_UUID, {"encrypt-authenticated-write"}, service), m_player(player) {}
 
 private:
     MprisPlayer *m_player;
@@ -61,7 +61,7 @@ class MediaArtistChrc : public Characteristic
 {
 public:
     MediaArtistChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
-        : Characteristic(bus, index, MEDIA_ARTIST_UUID, {"write"}, service), m_player(player) {}
+        : Characteristic(bus, index, MEDIA_ARTIST_UUID, {"encrypt-authenticated-write"}, service), m_player(player) {}
 
 private:
     MprisPlayer *m_player;
@@ -79,7 +79,7 @@ class MediaPlayingChrc : public Characteristic
 {
 public:
     MediaPlayingChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
-        : Characteristic(bus, index, MEDIA_PLAY_UUID, {"write"}, service), m_player(player) {}
+        : Characteristic(bus, index, MEDIA_PLAY_UUID, {"encrypt-authenticated-write"}, service), m_player(player) {}
 
 private:
     MprisPlayer *m_player;

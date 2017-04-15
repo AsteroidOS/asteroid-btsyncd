@@ -25,7 +25,7 @@
 #include "characteristic.h"
 #include "common.h"
 
-BatteryLvlChrc::BatteryLvlChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, BATTERY_LVL_UUID, {"read", "notify"}, service)
+BatteryLvlChrc::BatteryLvlChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, BATTERY_LVL_UUID, {"encrypt-authenticated-read", "notify"}, service)
 {
     m_battery = new ContextProperty("Battery.ChargePercentage", this);
     connect(m_battery, SIGNAL(valueChanged()), this, SLOT(onBatteryPercentageChanged()));

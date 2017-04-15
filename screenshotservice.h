@@ -27,7 +27,7 @@ class ScreenshotReqChrc : public Characteristic
     Q_OBJECT
 public:
     ScreenshotReqChrc(QDBusConnection bus, int index, Service *service)
-        : Characteristic(bus, index, SCREENSH_REQ_UUID, {"write"}, service) {}
+        : Characteristic(bus, index, SCREENSH_REQ_UUID, {"encrypt-authenticated-write"}, service) {}
 
 public slots:
     void WriteValue(QByteArray, QVariantMap);
@@ -42,7 +42,7 @@ class ScreenshotContentChrc : public Characteristic
     Q_OBJECT
     Q_PROPERTY(QByteArray Value READ getValue NOTIFY valueChanged)
 public:
-    ScreenshotContentChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, SCREENSH_CON_UUID, {"read", "notify"}, service)
+    ScreenshotContentChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, SCREENSH_CON_UUID, {"encrypt-authenticated-read", "notify"}, service)
     {}
 
 public slots:

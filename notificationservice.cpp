@@ -26,7 +26,7 @@ class NotificationsUpdateChrc : public Characteristic
 {
 public:
     NotificationsUpdateChrc(QDBusConnection bus, unsigned int index, QHash<int, uint> *knownAndroidNotifs, Service *service)
-      : Characteristic(bus, index, NOTI_UPD_UUID, {"write"}, service, service), mKnownAndroidNotifs(knownAndroidNotifs) {}
+      : Characteristic(bus, index, NOTI_UPD_UUID, {"encrypt-authenticated-write"}, service, service), mKnownAndroidNotifs(knownAndroidNotifs) {}
 
 public slots:
     void WriteValue(QByteArray value, QVariantMap)

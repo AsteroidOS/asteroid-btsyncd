@@ -27,7 +27,7 @@ class TimeSetChrc : public Characteristic
     Q_OBJECT
 public:
     TimeSetChrc(QDBusConnection bus, int index, Service *service)
-        : Characteristic(bus, index, TIME_SET_UUID, {"write"}, service) {}
+        : Characteristic(bus, index, TIME_SET_UUID, {"encrypt-authenticated-write"}, service) {}
 
 public slots:
     void WriteValue(QByteArray, QVariantMap);

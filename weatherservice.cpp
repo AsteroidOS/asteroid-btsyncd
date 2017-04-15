@@ -25,7 +25,7 @@
 class WeatherCityChrc : public Characteristic
 {
 public:
-    WeatherCityChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_CITY_UUID, {"write"}, service) {}
+    WeatherCityChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_CITY_UUID, {"encrypt-authenticated-write"}, service) {}
 
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
@@ -38,7 +38,7 @@ public slots:
 class WeatherIdsChrc : public Characteristic
 {
 public:
-    WeatherIdsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_IDS_UUID, {"write"}, service) {}
+    WeatherIdsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_IDS_UUID, {"encrypt-authenticated-write"}, service) {}
 
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
@@ -56,7 +56,7 @@ public slots:
 class WeatherMinTempsChrc : public Characteristic
 {
 public:
-    WeatherMinTempsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_MINT_UUID, {"write"}, service) {}
+    WeatherMinTempsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_MINT_UUID, {"encrypt-authenticated-write"}, service) {}
 
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
@@ -71,7 +71,7 @@ public slots:
 class WeatherMaxTempsChrc : public Characteristic
 {
 public:
-    WeatherMaxTempsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_MAXT_UUID, {"write"}, service) {}
+    WeatherMaxTempsChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_MAXT_UUID, {"encrypt-authenticated-write"}, service) {}
 
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
