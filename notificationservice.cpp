@@ -33,7 +33,7 @@ public slots:
     {
         int id;
         uint replacesId;
-        QString packageName, appName, appIcon, summary, body;
+        QString packageName, appName, appIcon, summary, body, vibrate = nullptr;
 
         mReader.addData(value);
 
@@ -46,6 +46,7 @@ public slots:
                     else if(mReader.name() == "ai") appIcon = mReader.readElementText();
                     else if(mReader.name() == "su") summary = mReader.readElementText();
                     else if(mReader.name() == "bo") body = mReader.readElementText();
+                    else if(mReader.name() == "vb") vibrate = mReader.readElementText();
                     else mReader.skipCurrentElement();
                 }
                 mReader.clear();
@@ -55,7 +56,16 @@ public slots:
                 QVariantMap hints;
                 hints.insert("x-nemo-preview-body", body);
                 hints.insert("x-nemo-preview-summary", summary);
-                hints.insert("x-nemo-feedback", "information_strong");
+
+                if (vibrate == nullptr) // for backwards compatibility
+                  hints.insert("x-nemo-feedback", "information_strong");
+                else if (vibrate.compare("none") == 0)
+                  hints.insert("x-nemo-feedback", "notifier");
+                else if (vibrate.compare("normal") == 0)
+                  hints.insert("x-nemo-feedback", "chat");
+                else if (vibrate.compare("strong") == 0)
+                  hints.insert("x-nemo-feedback", "information_strong");
+
                 hints.insert("urgency", 3);
 
                 QList<QVariant> argumentList;
