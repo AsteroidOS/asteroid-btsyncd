@@ -177,7 +177,7 @@ void BlueZManager::onConnectedChanged()
     argumentList << body;
     argumentList << QStringList();
     argumentList << hints;
-    argumentList << (int) 0;
+    argumentList << (int) 3;
 
     static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
     notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
