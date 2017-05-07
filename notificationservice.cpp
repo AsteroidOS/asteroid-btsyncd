@@ -90,6 +90,26 @@ public slots:
                 }
             } else
                 mReader.clear();
+        } else if(value.endsWith("</removed>")) {
+            if(mReader.readNextStartElement() && mReader.name() == "removed") {
+                while(mReader.readNextStartElement())
+                    if(mReader.name() == "id") id = mReader.readElementText().toInt();
+                mReader.clear();
+
+                replacesId = mKnownAndroidNotifs->value(id, 0);
+                if(replacesId) {
+                    QList<QVariant> argumentList;
+                    argumentList << replacesId;
+
+                    static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
+                    QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "CloseNotification", argumentList);
+                    if(reply.type() == QDBusMessage::ErrorMessage)
+                        fprintf(stderr, "NotificationsUpdateChrc::writeValue: D-Bus Error: %s\n", reply.errorMessage().toStdString().c_str());
+
+                    mKnownAndroidNotifs->remove(replacesId);
+                }
+            } else
+                mReader.clear();
         }
     }
 
