@@ -32,6 +32,8 @@ SOURCES += main.cpp \
     advertisement.cpp \
     bluezmanager.cpp
 
+TRANSLATIONS = i18n/asteroid-btsyncd.fr.ts
+
 TARGET = asteroid-btsyncd
 target.path = /usr/bin/
 
