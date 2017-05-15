@@ -30,6 +30,10 @@ int main(int argc, char **argv)
 {
     QCoreApplication qcoreapp(argc, argv);
 
+    QTranslator translator;
+    translator.load(QLocale(), "asteroid-btsyncd", ".", "/usr/share/translations", ".qm");
+    qcoreapp.installTranslator(&translator);
+
     if (!QDBusConnection::systemBus().isConnected()) {
         fprintf(stderr, "Cannot connect to the D-Bus system bus.\n");
         return 3;
