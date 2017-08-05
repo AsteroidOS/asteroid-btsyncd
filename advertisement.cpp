@@ -22,7 +22,7 @@ Advertisement::Advertisement(QDBusConnection bus, QObject *parent) : QObject(par
     mPath = ADVERTISEMENT_PATH_BASE;
     mBus = bus;
     mAdType = "peripheral";
-    mIncludeTxPower = true;
+    mIncludeTxPower = false;
 
     bus.registerObject(mPath, this, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllProperties);
 }
