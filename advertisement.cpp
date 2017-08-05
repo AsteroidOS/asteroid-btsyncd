@@ -23,6 +23,7 @@ Advertisement::Advertisement(QDBusConnection bus, QObject *parent) : QObject(par
     mBus = bus;
     mAdType = "peripheral";
     mIncludeTxPower = false;
+    addServiceUuid("00000000-0000-0000-0000-00a57e401d05");
 
     bus.registerObject(mPath, this, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllProperties);
 }
