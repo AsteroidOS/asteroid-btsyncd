@@ -28,7 +28,7 @@ void ScreenshotReqChrc::WriteValue(QByteArray, QVariantMap)
 {
     QList<QVariant> argumentList;
     argumentList << "/tmp/btsyncd-screenshot.jpg";
-    static QDBusInterface notifyApp(SCREENSHOT_SERVICE_NAME, SCREENSHOT_PATH_BASE, SCREENSHOT_MAIN_IFACE);
+    static QDBusInterface notifyApp(SCREENSHOT_SERVICE_NAME, SCREENSHOT_PATH_BASE, SCREENSHOT_MAIN_IFACE, QDBusConnection::systemBus());
     QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "saveScreenshot", argumentList);
     if(reply.type() == QDBusMessage::ErrorMessage)
         fprintf(stderr, "ScreenshotReqChrc::WriteValue: D-Bus Error: %s\n", reply.errorMessage().toStdString().c_str());
