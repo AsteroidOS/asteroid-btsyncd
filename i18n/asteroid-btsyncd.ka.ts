@@ -2,14 +2,14 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ka">
 <context>
-    <name>BlueZManager</name>
-    <message>
-        <location filename="../bluezmanager.cpp" line="157"/>
+    <name></name>
+    <message id="id-connected">
+        <location filename="../bluezmanager.cpp" line="158"/>
         <source>Connected</source>
         <translation>დაკავშირებული</translation>
     </message>
-    <message>
-        <location filename="../bluezmanager.cpp" line="161"/>
+    <message id="id-disconnected">
+        <location filename="../bluezmanager.cpp" line="163"/>
         <source>Disconnected</source>
         <translation>გათიშული</translation>
     </message>
