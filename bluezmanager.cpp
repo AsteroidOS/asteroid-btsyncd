@@ -154,11 +154,13 @@ void BlueZManager::onConnectedChanged()
     appName = "asteroid-btsyncd";
 
     if(mConnected) {
-        summary = tr("Connected");
+        //% "Connected"
+        summary = qtTrId("id-connected");
         body = mConnectedDevice;
         appIcon = "ios-bluetooth-outline";
     } else {
-        summary = tr("Disconnected");
+        //% "Disconnected"
+        summary = qtTrId("id-disconnected");
         body = "";
         appIcon = "ios-bluetooth-off-outline";
     }
