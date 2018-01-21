@@ -151,7 +151,7 @@ void BlueZManager::PropertiesChanged(QString, QMap<QString, QVariant>, QStringLi
 void BlueZManager::onConnectedChanged()
 {
     QString appName, appIcon, summary, body;
-    appName = "asteroid-btsyncd";
+    appName = "";
 
     if(mConnected) {
         //% "Connected"
@@ -170,6 +170,7 @@ void BlueZManager::onConnectedChanged()
     hints.insert("x-nemo-preview-summary", summary);
     hints.insert("x-nemo-feedback", "information_strong");
     hints.insert("urgency", 3);
+    hints.insert("transient", true);
 
     QList<QVariant> argumentList;
     argumentList << appName;
