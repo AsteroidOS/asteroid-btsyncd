@@ -58,15 +58,15 @@ public slots:
                 hints.insert("x-nemo-preview-summary", summary);
 
                 if (vibrate == nullptr) // for backwards compatibility
-                    hints.insert("x-nemo-feedback", "information_strong");
+                    hints.insert("x-nemo-feedback", "notif_strong");
                 else if (vibrate.compare("none") == 0)
-                    hints.insert("x-nemo-feedback", "notifier");
+                    hints.insert("x-nemo-feedback", "notif_silent");
                 else if (vibrate.compare("normal") == 0)
-                    hints.insert("x-nemo-feedback", "chat");
+                    hints.insert("x-nemo-feedback", "notif_normal");
                 else if (vibrate.compare("strong") == 0)
-                    hints.insert("x-nemo-feedback", "information_strong");
+                    hints.insert("x-nemo-feedback", "notif_strong");
                 else
-                    hints.insert("x-nemo-feedback", "information_strong");
+                    hints.insert("x-nemo-feedback", "notif_strong");
 
                 hints.insert("urgency", 3);
 
