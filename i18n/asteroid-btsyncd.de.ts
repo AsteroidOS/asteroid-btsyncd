@@ -6,12 +6,12 @@
     <message id="id-connected">
         <location filename="../bluezmanager.cpp" line="158"/>
         <source>Connected</source>
-        <translation></translation>
+        <translation>Verbunden</translation>
     </message>
     <message id="id-disconnected">
         <location filename="../bluezmanager.cpp" line="163"/>
         <source>Disconnected</source>
-        <translation></translation>
+        <translation>Getrennt</translation>
     </message>
 </context>
 </TS>
