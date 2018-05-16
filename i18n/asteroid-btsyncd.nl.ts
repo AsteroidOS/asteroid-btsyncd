@@ -11,7 +11,7 @@
     <message id="id-disconnected">
         <location filename="../bluezmanager.cpp" line="163"/>
         <source>Disconnected</source>
-        <translation>Verbinding verloren</translation>
+        <translation>Verbinding verbroken</translation>
     </message>
 </context>
 </TS>
