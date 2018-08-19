@@ -189,8 +189,34 @@ void ANCS::DataCharacteristicPropertiesChanged(QString interfaceName,
                     qDebug() << "Message was:" << bytes.toHex();
                     return;
                 }
-                qDebug() << "Tilte:" << title << "Message:" << message;
+                sendNotification(title, message);
             }
         }
     }
+}
+
+void ANCS::sendNotification(QString title, QString message)
+{
+    QString appName = "";
+    QString appIcon = "ios-notifications-outline";
+    QVariantMap hints;
+    hints.insert("x-nemo-preview-body", message);
+    hints.insert("x-nemo-preview-summary", title);
+    hints.insert("x-nemo-feedback", "notif_strong");
+    hints.insert("urgency", 3);
+    hints.insert("transient", true);
+
+    QList<QVariant> argumentList;
+    argumentList << appName;
+    argumentList << (uint) 0;
+    argumentList << appIcon;
+    argumentList << title;
+    argumentList << message;
+    argumentList << QStringList();
+    argumentList << hints;
+    argumentList << (int) 5;
+
+    static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE,
+                                    NOTIFICATIONS_MAIN_IFACE);
+    notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
 }

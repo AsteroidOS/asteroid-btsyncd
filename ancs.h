@@ -24,6 +24,7 @@ private:
     unsigned int decodeNumber(const QByteArray &arr, int offset, int length);
     int decodeStringAttribute(QByteArray bytes, int offset, int maxLenght, QString &result);
     void prepareQuery(QByteArray &result, const QByteArray &msgid);
+    void sendNotification(QString title, QString message);
 };
 
 #endif // ANCS_H
