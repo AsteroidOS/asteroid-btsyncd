@@ -22,6 +22,7 @@
 #include <QDBusPendingCall>
 #include <QDBusArgument>
 #include <QDebug>
+#include <QTimer>
 
 #include "common.h"
 
@@ -155,6 +156,8 @@ void BlueZManager::onConnectedChanged()
 
     if(mConnected) {
         //% "Connected"
+        // TODO: not a perfect way to discover ANCS characteristics, but good enough for now
+        QTimer::singleShot(2000, &mAncs, SLOT(SearchForAncsCharacteristics()));
         summary = qtTrId("id-connected");
         body = mConnectedDevice;
         appIcon = "ios-bluetooth-outline";

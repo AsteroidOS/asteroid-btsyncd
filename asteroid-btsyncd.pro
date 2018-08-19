@@ -17,7 +17,9 @@ HEADERS += \
     common.h \
     application.h \
     advertisement.h \
-    bluezmanager.h
+    bluezmanager.h \
+    ancs_protocol_constants.h \
+    ancs.h
 SOURCES += main.cpp \
     notificationservice.cpp \
     weatherservice.cpp \
@@ -30,7 +32,8 @@ SOURCES += main.cpp \
     descriptor.cpp \
     application.cpp \
     advertisement.cpp \
-    bluezmanager.cpp
+    bluezmanager.cpp \
+    ancs.cpp
 
 TRANSLATIONS = $$files(i18n/$$TARGET.*.ts)
 
