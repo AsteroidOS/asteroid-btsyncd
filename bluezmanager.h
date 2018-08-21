@@ -23,6 +23,8 @@
 #include <QDBusServiceWatcher>
 #include <QDBusConnection>
 
+#include "ancs.h"
+
 typedef QMap<QString, QMap<QString, QVariant>> InterfaceList;
 
 class BlueZManager : public QObject
@@ -38,6 +40,7 @@ private:
     QString mAdapter, mConnectedDevice;
     QDBusServiceWatcher *mWatcher;
     QDBusConnection mBus;
+    ANCS mAncs;
 
     void updateAdapter();
 
