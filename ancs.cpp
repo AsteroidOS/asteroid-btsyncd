@@ -114,7 +114,19 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString interfaceName,
             if (bytes.length() == 8) {
                 unsigned int eventId = decodeNumber(bytes, 0, 1);
                 if (eventId == ANCS_EVENT_ID_NOTIFICATION_ADDED || eventId == ANCS_EVENT_ID_NOTIFICATION_MODIFIED) {
+                    unsigned int eventFlags = decodeNumber(bytes, 1, 1);
+                    unsigned int categoryId = decodeNumber(bytes, 2, 1);
+                    unsigned int categoryCount = decodeNumber(bytes, 3, 1);
                     QByteArray msgId = bytes.mid(4);
+                    unsigned int msgKey = decodeNumber(msgId, 0, 4);
+                    ANCSMessageCacheEntry *entry = new ANCSMessageCacheEntry;
+                    if (entry) {
+                        entry->eventFlags = eventFlags;
+                        entry->categoryId = categoryId;
+                        entry->categoryCount = categoryCount;
+                        messageCache.insert(msgKey, entry);
+                    }
+
                     QDBusInterface controlCharacteristicIface("org.bluez", controlCharacteristic, GATT_CHRC_IFACE,
                                                               QDBusConnection::systemBus());
                     QByteArray query;
@@ -158,47 +170,135 @@ void ANCS::DataCharacteristicPropertiesChanged(QString interfaceName,
         QVariant value = changedProperties["Value"];
         if (value.type() == QVariant::ByteArray) {
             QByteArray bytes = value.toByteArray();
+            if (bytes.length() < 1) {
+                qDebug() << "Malformed message, length < 0, ignoring";
+                return;
+            }
             unsigned int commandId = decodeNumber(bytes, 0, 1);
             if (commandId == ANCS_COMMAND_ID_GET_NOTIFICATION_ATTRIBUTES) {
-                // skip event id and message id
-                int offset = 5;
-                QString title;
-                QString message;
-                while (offset < bytes.length()) {
-                    unsigned int attributeId = decodeNumber(bytes, offset, 1);
-                    offset += 1;
-                    if (attributeId == ANCS_NOTIFICATION_ATTRIBUTE_ID_TITLE) {
-                        int length = decodeStringAttribute(bytes, offset, TITLE_MAX_LENGTH, title);
-                        if (length == -1)
-                            return;
-                        offset += length;
-
-                    } else if (attributeId == ANCS_NOTIFICATION_ATTRIBUTE_ID_MESSAGE) {
-                        int length = decodeStringAttribute(bytes, offset, MESSAGE_MAX_LENGTH, message);
-                        if (length == -1)
-                            return;
-                        offset += length;
-                    } else {
-                        qDebug() << "Unknown attribute id, ignoring whole message";
-                        qDebug() << "Message was:" << bytes.toHex();
-                        return;
-                    }
-                }
-                if (offset != bytes.length()) {
-                    qDebug() << "Message not fully processed, ignoring";
-                    qDebug() << "Message was:" << bytes.toHex();
-                    return;
-                }
-                sendNotification(title, message);
+                handleGetNotificationAttributesResponse(bytes);
             }
         }
     }
 }
 
-void ANCS::sendNotification(QString title, QString message)
+bool ANCS::validateGetNotificationAttributesResponse(const QByteArray &bytes)
+{
+    if (bytes.length() < 5) {
+        qDebug() << "Malformed GetNotificationAttributes response, ignoring";
+        qDebug() << "Message was:" << bytes.toHex();
+        return false;
+    }
+    unsigned int commandId = decodeNumber(bytes, 0, 1);
+    if (commandId != ANCS_COMMAND_ID_GET_NOTIFICATION_ATTRIBUTES) {
+        qDebug() << "Expected ANCS_COMMAND_ID_GET_NOTIFICATION_ATTRIBUTES, ignoring";
+        qDebug() << "Message was:" << bytes.toHex();
+        return false;
+    }
+    return true;
+}
+
+void ANCS::handleGetNotificationAttributesResponse(const QByteArray &bytes)
+{
+    if (!validateGetNotificationAttributesResponse(bytes))
+        return;
+    QByteArray msgId = bytes.mid(1, 4);
+    // skip event id and message id
+    int offset = 5;
+    QString title;
+    QString message;
+    while (offset < bytes.length()) {
+        unsigned int attributeId = decodeNumber(bytes, offset, 1);
+        offset += 1;
+        if (attributeId == ANCS_NOTIFICATION_ATTRIBUTE_ID_TITLE) {
+            int length = decodeStringAttribute(bytes, offset, TITLE_MAX_LENGTH, title);
+            if (length == -1)
+                return;
+            offset += length;
+
+        } else if (attributeId == ANCS_NOTIFICATION_ATTRIBUTE_ID_MESSAGE) {
+            int length = decodeStringAttribute(bytes, offset, MESSAGE_MAX_LENGTH, message);
+            if (length == -1)
+                return;
+            offset += length;
+        } else {
+            qDebug() << "Unknown attribute id, ignoring whole message";
+            qDebug() << "Message was:" << bytes.toHex();
+            return;
+        }
+    }
+    if (offset != bytes.length()) {
+        qDebug() << "Message not fully processed, ignoring";
+        qDebug() << "Message was:" << bytes.toHex();
+        return;
+    }
+    QString messageIcon = "ios-notifications-outline";
+    unsigned int cacheKey = decodeNumber(msgId, 0, 4);
+    ANCSMessageCacheEntry *cacheEntry = messageCache.object(cacheKey);
+    if (cacheEntry) {
+        decodeIcon(cacheEntry->categoryId, messageIcon);
+    }
+
+    sendNotification(title, message, messageIcon);
+}
+
+void ANCS::decodeIcon(unsigned int categoryId, QString &result)
+{
+    switch (categoryId) {
+
+    case ANCS_CATEGORY_ID_INCOMING_CALL:
+        result = "ios-call-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_MISSED_CALL:
+        result = "ios-phone-landscape";
+        break;
+
+    case ANCS_CATEGORY_ID_VOICEMAIL:
+        result = "ios-disc-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_SOCIAL:
+        result = "ios-person-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_SCHEDULE:
+        result = "ios-calendar-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_EMAIL:
+        result = "ios-mail-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_NEWS:
+        result = "ios-paper-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_HEALTH_AND_FITNESS:
+        result = "ios-heart-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_BUSINESS_AND_FINANCE:
+        result = "ios-briefcase-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_LOCATION:
+        result = "ios-compass-outline";
+        break;
+
+    case ANCS_CATEGORY_ID_ENTERTAINMENT:
+        result = "ios-film-outline";
+        break;
+
+    default:
+        result = "ios-notifications-outline";
+    }
+}
+
+void ANCS::sendNotification(QString title, QString message, QString icon)
 {
     QString appName = "";
-    QString appIcon = "ios-notifications-outline";
+    QString appIcon = icon;
     QVariantMap hints;
     hints.insert("x-nemo-preview-body", message);
     hints.insert("x-nemo-preview-summary", title);
