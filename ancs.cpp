@@ -279,7 +279,7 @@ void ANCS::decodeIcon(unsigned int categoryId, QString &result)
         break;
 
     case ANCS_CATEGORY_ID_BUSINESS_AND_FINANCE:
-        result = "ios-briefcase-outline";
+        result = "ios-briefcase";
         break;
 
     case ANCS_CATEGORY_ID_LOCATION:
