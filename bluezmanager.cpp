@@ -59,16 +59,9 @@ void BlueZManager::serviceRegistered(const QString& name)
 void BlueZManager::serviceUnregistered(const QString& name)
 {
     qDebug() << "Service" << name << "is not running";
-    if(mAdapter != "adapter") {
-        mAdapter = "adapter";
-        emit adapterChanged();
-    }
-
-    if(mConnected) {
-        mConnected = false;
-        mConnectedDevice = "";
-        emit connectedChanged();
-    }
+    setAdapter("adapter");
+    mConnectedDevice = "";
+    setConnected(false);
 }
 
 void BlueZManager::InterfacesAdded(QDBusObjectPath, InterfaceList)
@@ -115,12 +108,21 @@ void BlueZManager::updateAdapter() {
         argument.endMap();
     }
 
-    if(adapter != mAdapter) {
+    setAdapter(adapter);
+    setConnected(connected);
+}
+
+void BlueZManager::setAdapter(QString adapter)
+{
+    if (adapter != mAdapter) {
         mAdapter = adapter;
         emit adapterChanged();
     }
+}
 
-    if(connected != mConnected) {
+void BlueZManager::setConnected(bool connected)
+{
+    if (connected != mConnected) {
         mConnected = connected;
         emit connectedChanged();
     }

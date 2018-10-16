@@ -43,6 +43,8 @@ private:
     ANCS mAncs;
 
     void updateAdapter();
+    void setAdapter(QString adatper);
+    void setConnected(bool connected);
 
 signals:
     void connectedChanged();
