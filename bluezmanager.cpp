@@ -30,6 +30,7 @@ BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, 
     : QObject(parent), mAppPath(appPath), mAdvertPath(advertPath), mAdapter("adapter"), mBus(QDBusConnection::systemBus())
 {
     mConnected = false;
+    mServicesResolved = false;
     mConnectedDevice = "";
 
     mWatcher = new QDBusServiceWatcher(BLUEZ_SERVICE_NAME, QDBusConnection::systemBus());
@@ -77,6 +78,7 @@ void BlueZManager::InterfacesRemoved(QDBusObjectPath, QStringList)
 void BlueZManager::updateAdapter() {
     QString adapter = "";
     bool connected = false;
+    bool servicesResolved = false;
 
     QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, mBus);
     QDBusMessage result = remoteOm.call("GetManagedObjects");
@@ -101,6 +103,9 @@ void BlueZManager::updateAdapter() {
                  if(properties.contains("Connected"))
                     connected |= properties.value("Connected").toBool();
 
+                 if(properties.contains("ServicesResolved"))
+                    servicesResolved |= properties.value("ServicesResolved").toBool();
+
                  if(properties.contains("Alias"))
                     mConnectedDevice = properties.value("Alias").toString();;
             }
@@ -110,6 +115,7 @@ void BlueZManager::updateAdapter() {
 
     setAdapter(adapter);
     setConnected(connected);
+    setServicesResolved(servicesResolved);
 }
 
 void BlueZManager::setAdapter(QString adapter)
@@ -125,6 +131,14 @@ void BlueZManager::setConnected(bool connected)
     if (connected != mConnected) {
         mConnected = connected;
         emit connectedChanged();
+    }
+}
+
+void BlueZManager::setServicesResolved(bool servicesResolved)
+{
+    if (servicesResolved != mServicesResolved) {
+        mServicesResolved = servicesResolved;
+        emit servicesResolvedChanged();
     }
 }
 

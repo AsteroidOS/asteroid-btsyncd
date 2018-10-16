@@ -35,7 +35,7 @@ public:
     void updateConnected();
 
 private:
-    bool mConnected;
+    bool mConnected, mServicesResolved;
     QDBusObjectPath mAppPath, mAdvertPath;
     QString mAdapter, mConnectedDevice;
     QDBusServiceWatcher *mWatcher;
@@ -45,10 +45,12 @@ private:
     void updateAdapter();
     void setAdapter(QString adatper);
     void setConnected(bool connected);
+    void setServicesResolved(bool servicesResolved);
 
 signals:
     void connectedChanged();
     void adapterChanged();
+    void servicesResolvedChanged();
 
 public slots:
     void serviceRegistered(const QString& name);
