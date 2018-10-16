@@ -60,6 +60,7 @@ public slots:
     void PropertiesChanged(QString, QMap<QString, QVariant>, QStringList);
 
     void onConnectedChanged();
+    void onServicesResolvedChanged();
     void onAdapterChanged();
 };
 

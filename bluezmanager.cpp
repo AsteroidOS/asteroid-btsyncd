@@ -39,6 +39,7 @@ BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, 
 
     connect(this, SIGNAL(adapterChanged()), this, SLOT(onAdapterChanged()));
     connect(this, SIGNAL(connectedChanged()), this, SLOT(onConnectedChanged()));
+    connect(this, SIGNAL(servicesResolvedChanged()), this, SLOT(onServicesResolvedChanged()));
 
     QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, mBus);
     if(remoteOm.isValid())
@@ -172,8 +173,6 @@ void BlueZManager::onConnectedChanged()
 
     if(mConnected) {
         //% "Connected"
-        // TODO: not a perfect way to discover ANCS characteristics, but good enough for now
-        QTimer::singleShot(2000, &mAncs, SLOT(SearchForAncsCharacteristics()));
         summary = qtTrId("id-connected");
         body = mConnectedDevice;
         appIcon = "ios-bluetooth-outline";
@@ -203,4 +202,9 @@ void BlueZManager::onConnectedChanged()
 
     static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
     notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
+}
+
+void BlueZManager::onServicesResolvedChanged() {
+    if (mServicesResolved)
+        mAncs.searchForAncsCharacteristics();
 }

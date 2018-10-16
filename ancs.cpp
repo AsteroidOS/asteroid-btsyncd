@@ -19,7 +19,7 @@ bool ANCS::isMatchingCharacteristic(QString uuid, QMap<QString, QVariantMap> dbu
     return charUuid.toLower() == uuid.toLower();
 }
 
-void ANCS::SearchForAncsCharacteristics()
+void ANCS::searchForAncsCharacteristics()
 {
     QDBusConnection bus = QDBusConnection::systemBus();
     QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, bus);
