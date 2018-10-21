@@ -35,7 +35,7 @@ public:
     void updateConnected();
 
 private:
-    bool mConnected;
+    bool mConnected, mServicesResolved;
     QDBusObjectPath mAppPath, mAdvertPath;
     QString mAdapter, mConnectedDevice;
     QDBusServiceWatcher *mWatcher;
@@ -43,10 +43,14 @@ private:
     ANCS mAncs;
 
     void updateAdapter();
+    void setAdapter(QString adatper);
+    void setConnected(bool connected);
+    void setServicesResolved(bool servicesResolved);
 
 signals:
     void connectedChanged();
     void adapterChanged();
+    void servicesResolvedChanged();
 
 public slots:
     void serviceRegistered(const QString& name);
@@ -56,6 +60,7 @@ public slots:
     void PropertiesChanged(QString, QMap<QString, QVariant>, QStringList);
 
     void onConnectedChanged();
+    void onServicesResolvedChanged();
     void onAdapterChanged();
 };
 

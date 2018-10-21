@@ -18,8 +18,8 @@ struct ANCSMessageCacheEntry {
 class ANCS: public QObject
 {
     Q_OBJECT
-public slots:
-    void SearchForAncsCharacteristics();
+public:
+    void searchForAncsCharacteristics();
 private slots:
     void NotificationCharacteristicPropertiesChanged( QString interfaceName,
                                                       QMap<QString, QVariant> changedProperties, QStringList invalidatedProperties);

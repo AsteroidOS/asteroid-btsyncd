@@ -30,6 +30,7 @@ BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, 
     : QObject(parent), mAppPath(appPath), mAdvertPath(advertPath), mAdapter("adapter"), mBus(QDBusConnection::systemBus())
 {
     mConnected = false;
+    mServicesResolved = false;
     mConnectedDevice = "";
 
     mWatcher = new QDBusServiceWatcher(BLUEZ_SERVICE_NAME, QDBusConnection::systemBus());
@@ -38,6 +39,7 @@ BlueZManager::BlueZManager(QDBusObjectPath appPath, QDBusObjectPath advertPath, 
 
     connect(this, SIGNAL(adapterChanged()), this, SLOT(onAdapterChanged()));
     connect(this, SIGNAL(connectedChanged()), this, SLOT(onConnectedChanged()));
+    connect(this, SIGNAL(servicesResolvedChanged()), this, SLOT(onServicesResolvedChanged()));
 
     QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, mBus);
     if(remoteOm.isValid())
@@ -59,16 +61,9 @@ void BlueZManager::serviceRegistered(const QString& name)
 void BlueZManager::serviceUnregistered(const QString& name)
 {
     qDebug() << "Service" << name << "is not running";
-    if(mAdapter != "adapter") {
-        mAdapter = "adapter";
-        emit adapterChanged();
-    }
-
-    if(mConnected) {
-        mConnected = false;
-        mConnectedDevice = "";
-        emit connectedChanged();
-    }
+    setAdapter("adapter");
+    mConnectedDevice = "";
+    setConnected(false);
 }
 
 void BlueZManager::InterfacesAdded(QDBusObjectPath, InterfaceList)
@@ -84,6 +79,7 @@ void BlueZManager::InterfacesRemoved(QDBusObjectPath, QStringList)
 void BlueZManager::updateAdapter() {
     QString adapter = "";
     bool connected = false;
+    bool servicesResolved = false;
 
     QDBusInterface remoteOm(BLUEZ_SERVICE_NAME, "/", DBUS_OM_IFACE, mBus);
     QDBusMessage result = remoteOm.call("GetManagedObjects");
@@ -108,6 +104,9 @@ void BlueZManager::updateAdapter() {
                  if(properties.contains("Connected"))
                     connected |= properties.value("Connected").toBool();
 
+                 if(properties.contains("ServicesResolved"))
+                    servicesResolved |= properties.value("ServicesResolved").toBool();
+
                  if(properties.contains("Alias"))
                     mConnectedDevice = properties.value("Alias").toString();;
             }
@@ -115,14 +114,32 @@ void BlueZManager::updateAdapter() {
         argument.endMap();
     }
 
-    if(adapter != mAdapter) {
+    setAdapter(adapter);
+    setConnected(connected);
+    setServicesResolved(servicesResolved);
+}
+
+void BlueZManager::setAdapter(QString adapter)
+{
+    if (adapter != mAdapter) {
         mAdapter = adapter;
         emit adapterChanged();
     }
+}
 
-    if(connected != mConnected) {
+void BlueZManager::setConnected(bool connected)
+{
+    if (connected != mConnected) {
         mConnected = connected;
         emit connectedChanged();
+    }
+}
+
+void BlueZManager::setServicesResolved(bool servicesResolved)
+{
+    if (servicesResolved != mServicesResolved) {
+        mServicesResolved = servicesResolved;
+        emit servicesResolvedChanged();
     }
 }
 
@@ -156,8 +173,6 @@ void BlueZManager::onConnectedChanged()
 
     if(mConnected) {
         //% "Connected"
-        // TODO: not a perfect way to discover ANCS characteristics, but good enough for now
-        QTimer::singleShot(2000, &mAncs, SLOT(SearchForAncsCharacteristics()));
         summary = qtTrId("id-connected");
         body = mConnectedDevice;
         appIcon = "ios-bluetooth-outline";
@@ -187,4 +202,9 @@ void BlueZManager::onConnectedChanged()
 
     static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE, NOTIFICATIONS_MAIN_IFACE);
     notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
+}
+
+void BlueZManager::onServicesResolvedChanged() {
+    if (mServicesResolved)
+        mAncs.searchForAncsCharacteristics();
 }
