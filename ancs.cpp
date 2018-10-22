@@ -119,12 +119,11 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString interfaceName,
                     unsigned int categoryCount = decodeNumber(bytes, 3, 1);
                     QByteArray msgId = bytes.mid(4);
                     unsigned int msgKey = decodeNumber(msgId, 0, 4);
-                    ANCSMessageCacheEntry *entry = new ANCSMessageCacheEntry;
+                    ANCSNotification *entry = new ANCSNotification;
                     if (entry) {
                         entry->eventFlags = eventFlags;
                         entry->categoryId = categoryId;
-                        entry->categoryCount = categoryCount;
-                        messageCache.insert(msgKey, entry);
+                        notificationCache.insert(msgKey, entry);
                     }
 
                     QDBusInterface controlCharacteristicIface("org.bluez", controlCharacteristic, GATT_CHRC_IFACE,
@@ -232,91 +231,13 @@ void ANCS::handleGetNotificationAttributesResponse(const QByteArray &bytes)
         qDebug() << "Message was:" << bytes.toHex();
         return;
     }
-    QString messageIcon = "ios-notifications-outline";
     unsigned int cacheKey = decodeNumber(msgId, 0, 4);
-    ANCSMessageCacheEntry *cacheEntry = messageCache.object(cacheKey);
-    if (cacheEntry) {
-        decodeIcon(cacheEntry->categoryId, messageIcon);
+    ANCSNotification *notification = notificationCache.object(cacheKey);
+    if (!notification) {
+        qWarning() << "ANCS notification not found in the cache, skipping, key:" << cacheKey;
+        return;
     }
-
-    sendNotification(title, message, messageIcon);
-}
-
-void ANCS::decodeIcon(unsigned int categoryId, QString &result)
-{
-    switch (categoryId) {
-
-    case ANCS_CATEGORY_ID_INCOMING_CALL:
-        result = "ios-call-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_MISSED_CALL:
-        result = "ios-phone-landscape";
-        break;
-
-    case ANCS_CATEGORY_ID_VOICEMAIL:
-        result = "ios-disc-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_SOCIAL:
-        result = "ios-person-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_SCHEDULE:
-        result = "ios-calendar-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_EMAIL:
-        result = "ios-mail-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_NEWS:
-        result = "ios-paper-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_HEALTH_AND_FITNESS:
-        result = "ios-heart-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_BUSINESS_AND_FINANCE:
-        result = "ios-briefcase";
-        break;
-
-    case ANCS_CATEGORY_ID_LOCATION:
-        result = "ios-compass-outline";
-        break;
-
-    case ANCS_CATEGORY_ID_ENTERTAINMENT:
-        result = "ios-film-outline";
-        break;
-
-    default:
-        result = "ios-notifications-outline";
-    }
-}
-
-void ANCS::sendNotification(QString title, QString message, QString icon)
-{
-    QString appName = "";
-    QString appIcon = icon;
-    QVariantMap hints;
-    hints.insert("x-nemo-preview-body", message);
-    hints.insert("x-nemo-preview-summary", title);
-    hints.insert("x-nemo-feedback", "notif_strong");
-    hints.insert("urgency", 3);
-    hints.insert("transient", true);
-
-    QList<QVariant> argumentList;
-    argumentList << appName;
-    argumentList << (uint) 0;
-    argumentList << appIcon;
-    argumentList << title;
-    argumentList << message;
-    argumentList << QStringList();
-    argumentList << hints;
-    argumentList << (int) 5;
-
-    static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE,
-                                    NOTIFICATIONS_MAIN_IFACE);
-    notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
+    notification->title = title;
+    notification->message = message;
+    notification->show();
 }
