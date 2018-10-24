@@ -9,6 +9,9 @@
 
 #define TITLE_MAX_LENGTH 50
 #define MESSAGE_MAX_LENGTH 100
+#define MAX_ANCS_NOTIFICATIONS 10
+
+ANCS::ANCS() : notificationCache(MAX_ANCS_NOTIFICATIONS) {}
 
 bool ANCS::isMatchingCharacteristic(QString uuid, QMap<QString, QVariantMap> dbusObject)
 {
@@ -69,7 +72,10 @@ void ANCS::searchForAncsCharacteristics()
     }
 }
 
-
+void ANCS::clearNotifications()
+{
+    notificationCache.clear();
+}
 
 void ANCS::appendByte(QByteArray &arr, unsigned int val)
 {
@@ -119,12 +125,14 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString interfaceName,
                     unsigned int categoryCount = decodeNumber(bytes, 3, 1);
                     QByteArray msgId = bytes.mid(4);
                     unsigned int msgKey = decodeNumber(msgId, 0, 4);
-                    ANCSNotification *entry = new ANCSNotification;
-                    if (entry) {
-                        entry->eventFlags = eventFlags;
-                        entry->categoryId = categoryId;
-                        notificationCache.insert(msgKey, entry);
-                    }
+                    ANCSNotification *entry = notificationCache.object(msgKey);
+                    if (!entry)
+                        entry = new ANCSNotification;
+                    if (!entry)
+                        return;
+                    entry->eventFlags = eventFlags;
+                    entry->categoryId = categoryId;
+                    notificationCache.insert(msgKey, entry);
 
                     QDBusInterface controlCharacteristicIface("org.bluez", controlCharacteristic, GATT_CHRC_IFACE,
                                                               QDBusConnection::systemBus());
@@ -132,6 +140,10 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString interfaceName,
                     prepareQuery(query, msgId);
                     QMap<QString, QVariant> empty;
                     controlCharacteristicIface.call("WriteValue", query, empty);
+                } else if (eventId == ANCS_EVENT_ID_NOTIFICATION_REMOVED) {
+                    QByteArray msgId = bytes.mid(4);
+                    unsigned int msgKey = decodeNumber(msgId, 0, 4);
+                    notificationCache.remove(msgKey);
                 }
             }
         }
@@ -239,5 +251,5 @@ void ANCS::handleGetNotificationAttributesResponse(const QByteArray &bytes)
     }
     notification->title = title;
     notification->message = message;
-    notification->show();
+    notification->refresh();
 }

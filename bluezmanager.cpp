@@ -177,6 +177,7 @@ void BlueZManager::onConnectedChanged()
         body = mConnectedDevice;
         appIcon = "ios-bluetooth-outline";
     } else {
+        mAncs.clearNotifications();
         //% "Disconnected"
         summary = qtTrId("id-disconnected");
         body = "";

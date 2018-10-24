@@ -13,7 +13,9 @@ class ANCS: public QObject
 {
     Q_OBJECT
 public:
+    ANCS();
     void searchForAncsCharacteristics();
+    void clearNotifications();
 private slots:
     void NotificationCharacteristicPropertiesChanged( QString interfaceName,
                                                       QMap<QString, QVariant> changedProperties, QStringList invalidatedProperties);

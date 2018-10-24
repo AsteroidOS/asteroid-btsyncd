@@ -13,8 +13,15 @@ public:
     QString message;
 
     ANCSNotification();
-    void show();
+    bool show();
+    bool refresh();
+    bool hide();
+    ~ANCSNotification();
 private:
+    uint notify(uint replaces, QString title, QString message, QString icon);
+    bool shown;
+    uint dbusNotificationId;
+
     QString decodeIcon();
 };
 

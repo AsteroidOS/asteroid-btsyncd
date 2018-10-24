@@ -7,7 +7,8 @@
 #include "common.h"
 #include "ancs_protocol_constants.h"
 
-ANCSNotification::ANCSNotification() : eventFlags(0), categoryId(ANCS_CATEGORY_ID_OTHER) {}
+ANCSNotification::ANCSNotification() : eventFlags(0), categoryId(ANCS_CATEGORY_ID_OTHER),
+    shown(false), dbusNotificationId(0) {}
 
 QString ANCSNotification::decodeIcon()
 {
@@ -52,7 +53,49 @@ QString ANCSNotification::decodeIcon()
     }
 }
 
-void ANCSNotification::show()
+bool ANCSNotification::show()
+{
+    if (shown)
+        return true;
+
+    uint result = notify(0, title, message, decodeIcon());
+    if (result) {
+        shown = true;
+        dbusNotificationId = result;
+        return true;
+    }
+    return false;
+}
+
+bool ANCSNotification::hide()
+{
+    if (!shown)
+        return true;
+    QList<QVariant> argumentList;
+    argumentList << dbusNotificationId;
+
+    static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE,
+                                    NOTIFICATIONS_MAIN_IFACE);
+    QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "CloseNotification",
+                                                        argumentList);
+    if (reply.type() == QDBusMessage::ErrorMessage) {
+        qWarning() << "CloseNotification D-Bus call returned error" << reply.errorMessage();
+        return false;
+    }
+    shown = false;
+    return true;
+}
+
+bool ANCSNotification::refresh()
+{
+    if (!shown) {
+        return show();
+    }
+    uint result = notify(dbusNotificationId, title, message, decodeIcon());
+    return result != 0;
+}
+
+uint ANCSNotification::notify(uint replaces, QString title, QString message, QString icon)
 {
     QString appName = "";
     QString appIcon = decodeIcon();
@@ -61,7 +104,6 @@ void ANCSNotification::show()
     hints.insert("x-nemo-preview-summary", title);
     hints.insert("x-nemo-feedback", "notif_strong");
     hints.insert("urgency", 3);
-    hints.insert("transient", true);
 
     QList<QVariant> argumentList;
     argumentList << appName;
@@ -71,9 +113,23 @@ void ANCSNotification::show()
     argumentList << message;
     argumentList << QStringList();
     argumentList << hints;
-    argumentList << (int) 5;
+    argumentList << (int) 0;
 
     static QDBusInterface notifyApp(NOTIFICATIONS_SERVICE_NAME, NOTIFICATIONS_PATH_BASE,
                                     NOTIFICATIONS_MAIN_IFACE);
-    notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
+    QDBusMessage reply = notifyApp.callWithArgumentList(QDBus::AutoDetect, "Notify", argumentList);
+    if (reply.type() == QDBusMessage::ErrorMessage) {
+        qWarning() << "Notify D-Bus call returned error:" << reply.errorMessage();
+        return 0;
+    }
+    if (reply.arguments().size() < 1) {
+        qWarning() << "Notify D-Bus call successful but no reply arguments";
+        return 0;
+    }
+    return reply.arguments()[0].toUInt();
+}
+
+ANCSNotification::~ANCSNotification()
+{
+    hide();
 }
