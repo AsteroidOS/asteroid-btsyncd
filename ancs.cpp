@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QDBusInterface>
 #include <QDBusArgument>
+#include <QDateTime>
 
 #include "common.h"
 #include "ancs_protocol_constants.h"
@@ -10,8 +11,16 @@
 #define TITLE_MAX_LENGTH 50
 #define MESSAGE_MAX_LENGTH 100
 #define MAX_ANCS_NOTIFICATIONS 10
+#define NO_FEEDBACK_FOR_PAST_NOTIFICATION_SECONDS 20
 
-ANCS::ANCS() : notificationCache(MAX_ANCS_NOTIFICATIONS) {}
+ANCS::ANCS() : notificationCache(MAX_ANCS_NOTIFICATIONS), noFeedbackForPastNotifications(false)
+{
+    pastNotificationsTimer = new QTimer(this);
+    connect(pastNotificationsTimer, SIGNAL(timeout()), this,
+            SLOT(EnableFeedbackForPastNotifications()));
+    pastNotificationsTimer->setSingleShot(true);
+    pastNotificationsTimer->setInterval(NO_FEEDBACK_FOR_PAST_NOTIFICATION_SECONDS * 1000);
+}
 
 bool ANCS::isMatchingCharacteristic(QString uuid, QMap<QString, QVariantMap> dbusObject)
 {
@@ -69,12 +78,17 @@ void ANCS::searchForAncsCharacteristics()
         dataCharacteristicIface.call("StartNotify");
         notificationCharacteristicIface.call("StartNotify");
         qDebug() << "ANCS notifications enabled";
+        pastNotificationsTimer->start();
     }
 }
 
-void ANCS::clearNotifications()
+void ANCS::disconnect()
 {
     notificationCache.clear();
+    previousSessionMaxTimestamp = currentSessionMaxTimestamp;
+    currentSessionMaxTimestamp = QDateTime();
+    noFeedbackForPastNotifications = true;
+    pastNotificationsTimer->stop();
 }
 
 void ANCS::appendByte(QByteArray &arr, unsigned int val)
@@ -108,6 +122,7 @@ void ANCS::prepareQuery(QByteArray &result, const QByteArray &msgId)
     append2Bytes(result, TITLE_MAX_LENGTH);
     appendByte(result, ANCS_NOTIFICATION_ATTRIBUTE_ID_MESSAGE);
     append2Bytes(result, MESSAGE_MAX_LENGTH);
+    appendByte(result, ANCS_NOTIFICATION_ATTRIBUTE_ID_DATE);
 }
 
 void ANCS::NotificationCharacteristicPropertiesChanged(QString /* interfaceName */,
@@ -120,6 +135,7 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString /* interfaceName 
             if (bytes.length() == 8) {
                 unsigned int eventId = decodeNumber(bytes, 0, 1);
                 if (eventId == ANCS_EVENT_ID_NOTIFICATION_ADDED || eventId == ANCS_EVENT_ID_NOTIFICATION_MODIFIED) {
+                    bool isNew = (eventId == ANCS_EVENT_ID_NOTIFICATION_ADDED);
                     unsigned int eventFlags = decodeNumber(bytes, 1, 1);
                     unsigned int categoryId = decodeNumber(bytes, 2, 1);
                     QByteArray msgId = bytes.mid(4);
@@ -131,6 +147,7 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString /* interfaceName 
                         return;
                     entry->eventFlags = eventFlags;
                     entry->categoryId = categoryId;
+                    entry->isNew = isNew;
                     notificationCache.insert(msgKey, entry);
 
                     QDBusInterface controlCharacteristicIface("org.bluez", controlCharacteristic, GATT_CHRC_IFACE,
@@ -217,6 +234,7 @@ void ANCS::handleGetNotificationAttributesResponse(const QByteArray &bytes)
     int offset = 5;
     QString title;
     QString message;
+    QDateTime timestamp;
     while (offset < bytes.length()) {
         unsigned int attributeId = decodeNumber(bytes, offset, 1);
         offset += 1;
@@ -230,6 +248,19 @@ void ANCS::handleGetNotificationAttributesResponse(const QByteArray &bytes)
             int length = decodeStringAttribute(bytes, offset, MESSAGE_MAX_LENGTH, message);
             if (length == -1)
                 return;
+            offset += length;
+        } else if (attributeId == ANCS_NOTIFICATION_ATTRIBUTE_ID_DATE) {
+            QString dateText;
+            int length = decodeStringAttribute(bytes, offset, 15, dateText);
+            if (length == -1)
+                return;
+            if (length > 0) {
+                timestamp = QDateTime::fromString(dateText, "yyyyMMddTHHmmss");
+                if (timestamp.isValid()) {
+                    if (!currentSessionMaxTimestamp.isValid() || timestamp > currentSessionMaxTimestamp)
+                        currentSessionMaxTimestamp = timestamp;
+                }
+            }
             offset += length;
         } else {
             qDebug() << "Unknown attribute id, ignoring whole message";
@@ -248,7 +279,16 @@ void ANCS::handleGetNotificationAttributesResponse(const QByteArray &bytes)
         qWarning() << "ANCS notification not found in the cache, skipping, key:" << cacheKey;
         return;
     }
+    bool feedback = notification->isNew;
+    if (noFeedbackForPastNotifications && previousSessionMaxTimestamp.isValid() && timestamp.isValid()
+            && timestamp <= previousSessionMaxTimestamp)
+        feedback = false;
     notification->title = title;
     notification->message = message;
-    notification->refresh();
+    notification->refresh(feedback);
+}
+
+void ANCS::EnableFeedbackForPastNotifications()
+{
+    noFeedbackForPastNotifications = false;
 }

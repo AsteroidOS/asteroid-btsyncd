@@ -11,14 +11,15 @@ public:
     uint categoryId;
     QString title;
     QString message;
+    bool isNew;
 
     ANCSNotification();
-    bool show();
-    bool refresh();
+    bool show(bool feedback);
+    bool refresh(bool feedback);
     bool hide();
     ~ANCSNotification();
 private:
-    uint notify(uint replaces, QString title, QString message, QString icon);
+    uint notify(uint replaces, QString title, QString message, QString icon, bool feedback);
     bool shown;
     uint dbusNotificationId;
 

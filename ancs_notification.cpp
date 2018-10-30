@@ -8,7 +8,7 @@
 #include "ancs_protocol_constants.h"
 
 ANCSNotification::ANCSNotification() : eventFlags(0), categoryId(ANCS_CATEGORY_ID_OTHER),
-    shown(false), dbusNotificationId(0) {}
+    isNew(false), shown(false), dbusNotificationId(0) {}
 
 QString ANCSNotification::decodeIcon()
 {
@@ -53,12 +53,12 @@ QString ANCSNotification::decodeIcon()
     }
 }
 
-bool ANCSNotification::show()
+bool ANCSNotification::show(bool feedback)
 {
     if (shown)
         return true;
 
-    uint result = notify(0, title, message, decodeIcon());
+    uint result = notify(0, title, message, decodeIcon(), feedback);
     if (result) {
         shown = true;
         dbusNotificationId = result;
@@ -86,22 +86,28 @@ bool ANCSNotification::hide()
     return true;
 }
 
-bool ANCSNotification::refresh()
+bool ANCSNotification::refresh(bool feedback)
 {
     if (!shown) {
-        return show();
+        return show(feedback);
     }
-    uint result = notify(dbusNotificationId, title, message, decodeIcon());
+    uint result = notify(dbusNotificationId, title, message, decodeIcon(), feedback);
     return result != 0;
 }
 
-uint ANCSNotification::notify(uint replaces, QString title, QString message, QString icon)
+uint ANCSNotification::notify(uint replaces, QString title, QString message, QString icon,
+                              bool feedback)
 {
     QString appName = "";
     QVariantMap hints;
-    hints.insert("x-nemo-preview-body", message);
-    hints.insert("x-nemo-preview-summary", title);
-    hints.insert("x-nemo-feedback", "notif_strong");
+
+    if (feedback) {
+        hints.insert("x-nemo-preview-body", message);
+        hints.insert("x-nemo-preview-summary", title);
+        hints.insert("x-nemo-feedback", "notif_strong");
+    } else {
+        hints.insert("x-nemo-feedback-suppressed", true);
+    }
     hints.insert("urgency", 3);
 
     QList<QVariant> argumentList;
