@@ -110,8 +110,8 @@ void ANCS::prepareQuery(QByteArray &result, const QByteArray &msgId)
     append2Bytes(result, MESSAGE_MAX_LENGTH);
 }
 
-void ANCS::NotificationCharacteristicPropertiesChanged(QString interfaceName,
-                                                       QMap<QString, QVariant> changedProperties, QStringList invalidatedProperties)
+void ANCS::NotificationCharacteristicPropertiesChanged(QString /* interfaceName */,
+                                                       QMap<QString, QVariant> changedProperties, QStringList /* invalidatedProperties */)
 {
     if (changedProperties.contains("Value")) {
         QVariant value = changedProperties["Value"];
@@ -122,7 +122,6 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString interfaceName,
                 if (eventId == ANCS_EVENT_ID_NOTIFICATION_ADDED || eventId == ANCS_EVENT_ID_NOTIFICATION_MODIFIED) {
                     unsigned int eventFlags = decodeNumber(bytes, 1, 1);
                     unsigned int categoryId = decodeNumber(bytes, 2, 1);
-                    unsigned int categoryCount = decodeNumber(bytes, 3, 1);
                     QByteArray msgId = bytes.mid(4);
                     unsigned int msgKey = decodeNumber(msgId, 0, 4);
                     ANCSNotification *entry = notificationCache.object(msgKey);
@@ -174,8 +173,8 @@ int ANCS::decodeStringAttribute(QByteArray bytes, int offset, int maxLenght, QSt
     return length + 2;
 }
 
-void ANCS::DataCharacteristicPropertiesChanged(QString interfaceName,
-                                               QMap<QString, QVariant> changedProperties, QStringList invalidatedProperties)
+void ANCS::DataCharacteristicPropertiesChanged(QString /* interfaceName */,
+                                               QMap<QString, QVariant> changedProperties, QStringList /* invalidatedProperties */)
 {
     if (changedProperties.contains("Value")) {
         QVariant value = changedProperties["Value"];
