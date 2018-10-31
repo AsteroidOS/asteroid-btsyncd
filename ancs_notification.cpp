@@ -98,7 +98,6 @@ bool ANCSNotification::refresh()
 uint ANCSNotification::notify(uint replaces, QString title, QString message, QString icon)
 {
     QString appName = "";
-    QString appIcon = decodeIcon();
     QVariantMap hints;
     hints.insert("x-nemo-preview-body", message);
     hints.insert("x-nemo-preview-summary", title);
@@ -107,8 +106,8 @@ uint ANCSNotification::notify(uint replaces, QString title, QString message, QSt
 
     QList<QVariant> argumentList;
     argumentList << appName;
-    argumentList << (uint) 0;
-    argumentList << appIcon;
+    argumentList << replaces;
+    argumentList << icon;
     argumentList << title;
     argumentList << message;
     argumentList << QStringList();
