@@ -11,7 +11,7 @@
     <message id="id-disconnected">
         <location filename="../bluezmanager.cpp" line="163"/>
         <source>Disconnected</source>
-        <translation>Nije spojen</translation>
+        <translation>Odspojen</translation>
     </message>
 </context>
 </TS>
