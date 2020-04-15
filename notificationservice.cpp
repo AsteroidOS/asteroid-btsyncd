@@ -65,6 +65,8 @@ public slots:
                     hints.insert("x-nemo-feedback", "notif_normal");
                 else if (vibrate.compare("strong") == 0)
                     hints.insert("x-nemo-feedback", "notif_strong");
+                else if (vibrate.compare("ringtone") == 0)
+                    hints.insert("x-nemo-feedback", "ringtone");
                 else
                     hints.insert("x-nemo-feedback", "notif_strong");
 
