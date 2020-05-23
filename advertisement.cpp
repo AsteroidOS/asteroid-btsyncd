@@ -24,6 +24,7 @@ Advertisement::Advertisement(QDBusConnection bus, QObject *parent) : QObject(par
     mAdType = "peripheral";
     mIncludeTxPower = false;
     addServiceUuid("00000000-0000-0000-0000-00a57e401d05");
+    mDiscoverable = true;
 
     bus.registerObject(mPath, this, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllProperties);
 }
@@ -76,6 +77,11 @@ QMap<QString, QByteArray> Advertisement::getServiceData()
 bool Advertisement::getIncludeTxPower()
 {
     return mIncludeTxPower;
+}
+
+bool Advertisement::getDiscoverable()
+{
+    return mDiscoverable;
 }
 
 /* Exposed slots */
