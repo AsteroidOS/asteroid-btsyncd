@@ -35,6 +35,7 @@ class Advertisement : public QObject
     Q_PROPERTY(QMap<unsigned int, QByteArray> ManufacturerData READ getManufacturerData())
     Q_PROPERTY(QMap<QString, QByteArray> ServiceData READ getServiceData())
     Q_PROPERTY(bool IncludeTxPower READ getIncludeTxPower())
+    Q_PROPERTY(bool Discoverable READ getDiscoverable())
 
 public:
     explicit Advertisement(QDBusConnection bus = QDBusConnection::systemBus(), QObject *parent = 0);
@@ -52,6 +53,7 @@ private:
     QMap<unsigned int, QByteArray> getManufacturerData();
     QMap<QString, QByteArray> getServiceData();
     bool getIncludeTxPower();
+    bool getDiscoverable();
 
     QDBusConnection mBus;
     QString mPath, mAdType;
@@ -59,6 +61,7 @@ private:
     QMap<unsigned int, QByteArray> mManufacturerData;
     QMap<QString, QByteArray> mServiceData;
     bool mIncludeTxPower;
+    bool mDiscoverable;
 
 public slots:
     void Release();
