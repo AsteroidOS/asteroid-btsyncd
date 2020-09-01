@@ -28,6 +28,7 @@
 #define MEDIA_COMMAND_NEXT     0x1
 #define MEDIA_COMMAND_PLAY     0x2
 #define MEDIA_COMMAND_PAUSE    0x3
+#define MEDIA_COMMAND_VOLUME   0x4
 
 
 class MediaCommandsChrc : public Characteristic
@@ -65,6 +66,7 @@ public slots:
     void stopRequested();
     void nextRequested();
     void previousRequested();
+    void volumeRequested(double volume);
 
     void StartNotify() {}
     void StopNotify() {}
