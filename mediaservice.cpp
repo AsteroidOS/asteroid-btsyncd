@@ -131,6 +131,13 @@ void MediaCommandsChrc::previousRequested()
     emit valueChanged();
 }
 
+void MediaCommandsChrc::volumeRequested(double volume)
+{
+    m_value[0] = MEDIA_COMMAND_VOLUME;
+    m_value[1] = volume*100;
+    emit valueChanged();
+}
+
 void MediaCommandsChrc::emitPropertiesChanged()
 {
     QDBusConnection connection = QDBusConnection::systemBus();
@@ -148,6 +155,22 @@ void MediaCommandsChrc::emitPropertiesChanged()
     if (!connection.send(message))
         qDebug() << "Failed to send DBus property notification signal";
 }
+
+class MediaVolumeChrc : public Characteristic
+{
+public:
+    MediaVolumeChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
+        : Characteristic(bus, index, MEDIA_VOL_UUID, {"encrypt-authenticated-write"}, service), m_player(player) {}
+
+private:
+    MprisPlayer *m_player;
+
+public slots:
+    void WriteValue(QByteArray value, QVariantMap)
+    {
+        m_player->setVolume(int(value[0])/100.0);
+    }
+};
 
 MediaService::MediaService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, MEDIA_UUID, parent)
 {
@@ -177,6 +200,7 @@ MediaService::MediaService(int index, QDBusConnection bus, QObject *parent) : Se
     addCharacteristic(new MediaPlayingChrc(m_mprisPlayer, bus, 3, this));
     m_commandsChrc = new MediaCommandsChrc(m_mprisPlayer, bus, 4, this);
     addCharacteristic(m_commandsChrc);
+    addCharacteristic(new MediaVolumeChrc(m_mprisPlayer, bus, 5, this));
 
     connect(m_mprisPlayer, SIGNAL(pauseRequested()), m_commandsChrc, SLOT(pauseRequested()));
     connect(m_mprisPlayer, SIGNAL(playRequested()), m_commandsChrc, SLOT(playRequested()));
@@ -184,4 +208,5 @@ MediaService::MediaService(int index, QDBusConnection bus, QObject *parent) : Se
     connect(m_mprisPlayer, SIGNAL(stopRequested()), m_commandsChrc, SLOT(stopRequested()));
     connect(m_mprisPlayer, SIGNAL(nextRequested()), m_commandsChrc, SLOT(nextRequested()));
     connect(m_mprisPlayer, SIGNAL(previousRequested()), m_commandsChrc, SLOT(previousRequested()));
+    connect(m_mprisPlayer, SIGNAL(volumeRequested(double)), m_commandsChrc, SLOT(volumeRequested(double)));
  }
