@@ -187,7 +187,7 @@ void BlueZManager::onConnectedChanged()
     QVariantMap hints;
     hints.insert("x-nemo-preview-body", body);
     hints.insert("x-nemo-preview-summary", summary);
-    hints.insert("x-nemo-feedback", "notif_strong");
+    hints.insert("x-nemo-feedback", "notif_silent");
     hints.insert("urgency", 3);
     hints.insert("transient", true);
 
