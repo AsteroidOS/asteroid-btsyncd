@@ -22,7 +22,7 @@
 
 #include "service.h"
 
-class ContextProperty;
+class BatteryStatus;
 
 class BatteryLvlChrc : public Characteristic
 {
@@ -42,13 +42,13 @@ public slots:
 
 private slots:
     void emitPropertiesChanged();
-    void onBatteryPercentageChanged();
+    void onBatteryPercentageChanged(int percentage);
 
 signals:
     void valueChanged();
 
 private:
-    ContextProperty *m_battery;
+    BatteryStatus *m_battery;
     QByteArray m_value;
 
     QByteArray getValue()
