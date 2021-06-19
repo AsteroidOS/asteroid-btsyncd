@@ -192,7 +192,6 @@ MediaService::MediaService(int index, QDBusConnection bus, QObject *parent) : Se
     m_mprisPlayer->setPlaybackStatus(Mpris::Stopped);
     m_mprisPlayer->setLoopStatus(Mpris::None);
     m_mprisPlayer->setShuffle(false);
-    m_mprisPlayer->setVolume(1);
 
     addCharacteristic(new MediaTitleChrc(m_mprisPlayer, bus, 0, this));
     addCharacteristic(new MediaAlbumChrc(m_mprisPlayer, bus, 1, this));
