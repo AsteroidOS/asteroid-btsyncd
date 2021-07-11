@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <contextproperty.h>
+#include <batterystatus.h>
 
 #include <QTimer>
 #include <QDBusMessage>
@@ -27,19 +27,20 @@
 
 BatteryLvlChrc::BatteryLvlChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, BATTERY_LVL_UUID, {"encrypt-authenticated-read", "notify"}, service)
 {
-    m_battery = new ContextProperty("Battery.ChargePercentage", this);
-    connect(m_battery, SIGNAL(valueChanged()), this, SLOT(onBatteryPercentageChanged()));
+    m_battery = new BatteryStatus(this);
+    connect(m_battery, &BatteryStatus::chargePercentageChanged,
+            this, &BatteryLvlChrc::onBatteryPercentageChanged);
     connect(this, SIGNAL(valueChanged()), this, SLOT(emitPropertiesChanged()));
     m_value = QByteArray(1, 100);
-    QTimer::singleShot(0, this, SLOT(onBatteryPercentageChanged()));
 }
 
-void BatteryLvlChrc::onBatteryPercentageChanged()
+void BatteryLvlChrc::onBatteryPercentageChanged(int percentage)
 {
-    char val = m_battery->value().toUInt();
-    m_value = QByteArray(1, val);
+    if (percentage >= 0) {
+        m_value = QByteArray(1, percentage);
 
-    emit valueChanged();
+        emit valueChanged();
+    }
 }
 
 void BatteryLvlChrc::emitPropertiesChanged()
