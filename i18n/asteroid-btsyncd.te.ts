@@ -4,12 +4,12 @@
 <context>
     <name></name>
     <message id="id-connected">
-        <location filename="../bluezmanager.cpp" line="158"/>
+        <location filename="../src/bluezmanager.cpp" line="176"/>
         <source>Connected</source>
         <translation>కనెక్టెడ్</translation>
     </message>
     <message id="id-disconnected">
-        <location filename="../bluezmanager.cpp" line="163"/>
+        <location filename="../src/bluezmanager.cpp" line="182"/>
         <source>Disconnected</source>
         <translation>దిస్కన్నేక్టేడ్</translation>
     </message>
