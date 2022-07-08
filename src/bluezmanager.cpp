@@ -150,11 +150,11 @@ void BlueZManager::onAdapterChanged()
         qDebug() << "BLE Adapter" << mAdapter << "found";
 
         QDBusInterface serviceManager(BLUEZ_SERVICE_NAME, mAdapter, GATT_MANAGER_IFACE, mBus);
-        serviceManager.asyncCall("RegisterApplication", qVariantFromValue(mAppPath), QVariantMap());
+        serviceManager.asyncCall("RegisterApplication", QVariant::fromValue(mAppPath), QVariantMap());
         qDebug() << "Service" << mAppPath.path() << "registered";
 
         QDBusInterface adManager(BLUEZ_SERVICE_NAME, mAdapter, LE_ADVERTISING_MANAGER_IFACE, mBus);
-        adManager.asyncCall("RegisterAdvertisement", qVariantFromValue(mAdvertPath), QVariantMap());
+        adManager.asyncCall("RegisterAdvertisement", QVariant::fromValue(mAdvertPath), QVariantMap());
         qDebug() << "Advertisement" << mAdvertPath.path() << "registered";
     }
     else
