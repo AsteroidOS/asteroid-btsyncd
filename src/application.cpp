@@ -62,7 +62,7 @@ ManagedObjectList Application::GetManagedObjects()
         QVariantMap serviceProperties;
         serviceProperties.insert("UUID", serv->getUuid());
         serviceProperties.insert("Primary", serv->getPrimary());
-        serviceProperties.insert("Characteristics", qVariantFromValue(serv->getCharacteristicPaths()));
+        serviceProperties.insert("Characteristics", QVariant::fromValue(serv->getCharacteristicPaths()));
         serviceInterfaces.insert(GATT_SERVICE_IFACE, serviceProperties);
         response.insert(serv->getPath(), serviceInterfaces);
 
@@ -70,10 +70,10 @@ ManagedObjectList Application::GetManagedObjects()
         foreach(Characteristic *chrc, chrcs) {
             InterfaceList chrcInterfaces;
             QVariantMap chrcProperties;
-            chrcProperties.insert("Service", qVariantFromValue(chrc->getService()));
+            chrcProperties.insert("Service", QVariant::fromValue(chrc->getService()));
             chrcProperties.insert("UUID", chrc->getUuid());
             chrcProperties.insert("Flags", chrc->getFlags());
-            chrcProperties.insert("Descriptors", qVariantFromValue(chrc->getDescriptorPaths()));
+            chrcProperties.insert("Descriptors", QVariant::fromValue(chrc->getDescriptorPaths()));
             chrcInterfaces.insert(GATT_CHRC_IFACE, chrcProperties);
             response.insert(chrc->getPath(), chrcInterfaces);
 
@@ -82,7 +82,7 @@ ManagedObjectList Application::GetManagedObjects()
                 InterfaceList descInterfaces;
                 QVariantMap descProperties;
                 descProperties.insert("UUID", desc->getUuid());
-                descProperties.insert("Characteristic", qVariantFromValue(desc->getCharacteristic()));
+                descProperties.insert("Characteristic", QVariant::fromValue(desc->getCharacteristic()));
                 descProperties.insert("Flags", desc->getFlags());
                 descInterfaces.insert(GATT_DESC_IFACE, descProperties);
                 response.insert(desc->getPath(), descInterfaces);
