@@ -28,12 +28,12 @@
 
 void TimeSetChrc::WriteValue(QByteArray value, QVariantMap)
 {
-    int year = 1900 + value[0];
-    int month = 1+value[1];
-    int day = value[2];
-    int hour = value[3];
-    int minute = value[4];
-    int second = value[5];
+    int year = 1900 + (unsigned char) value[0];
+    int month = 1+ (unsigned char) value[1];
+    int day = (unsigned char) value[2];
+    int hour = (unsigned char) value[3];
+    int minute = (unsigned char) value[4];
+    int second = (unsigned char) value[5];
 
     Maemo::Timed::WallClock::Settings s;
     QDateTime newTime(QDate(year, month, day), QTime(hour, minute, second));
