@@ -22,6 +22,10 @@
 #include "common.h"
 #include <time.h>
 
+int getQByteArrayInt(QByteArray arr, int index) {
+    return (((unsigned char) arr[index * 2]) << 8) | ((unsigned char) arr[index * 2 + 1]);
+}
+
 class WeatherCityChrc : public Characteristic
 {
 public:
@@ -45,7 +49,7 @@ public slots:
     {
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
-            settings->set_int("id", value[2*i]*256 +value[2*i+1]);
+            settings->set_int("id", getQByteArrayInt(value, i));
         }
 
         const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather");
@@ -63,7 +67,7 @@ public slots:
     {
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
-            settings->set_int("min-temp", value[2*i]*256 +value[2*i+1]);
+            settings->set_int("min-temp", getQByteArrayInt(value, i));
         }
     }
 };
@@ -78,7 +82,7 @@ public slots:
     {
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
-            settings->set_int("max-temp", value[2*i]*256 +value[2*i+1]);
+            settings->set_int("max-temp", getQByteArrayInt(value, i));
         }
     }
 };

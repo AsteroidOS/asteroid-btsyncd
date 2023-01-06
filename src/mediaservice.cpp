@@ -168,7 +168,7 @@ private:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
-        m_player->setVolume(int(value[0])/100.0);
+        m_player->setVolume(int( (unsigned char) value[0])/100.0);
     }
 };
 
