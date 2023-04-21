@@ -18,6 +18,7 @@
 #include <QDBusInterface>
 #include <QDBusMessage>
 #include <QDateTime>
+#include <QTimeZone>
 
 #include <timed-qt5/wallclock>
 #include <timed-qt5/interface>
@@ -37,6 +38,7 @@ void TimeSetChrc::WriteValue(QByteArray value, QVariantMap)
 
     Maemo::Timed::WallClock::Settings s;
     QDateTime newTime(QDate(year, month, day), QTime(hour, minute, second));
+    newTime.setTimeZone(QTimeZone::systemTimeZone());
     s.setTimeManual(newTime.toTime_t());
 
     Maemo::Timed::Interface timed;
