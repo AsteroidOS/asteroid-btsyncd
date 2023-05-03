@@ -6,7 +6,7 @@
     <message id="id-connected">
         <location filename="../src/bluezmanager.cpp" line="176"/>
         <source>Connected</source>
-        <translation>وصل‌شده</translation>
+        <translation>متصل</translation>
     </message>
     <message id="id-disconnected">
         <location filename="../src/bluezmanager.cpp" line="182"/>
