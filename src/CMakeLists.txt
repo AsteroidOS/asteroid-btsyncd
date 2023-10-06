@@ -11,6 +11,7 @@ set(SRC
 	descriptor.cpp
 	application.cpp
 	advertisement.cpp
+    advertisementservice.cpp
 	bluezmanager.cpp
 	ancs.cpp
 	ancs_notification.cpp)
@@ -27,6 +28,7 @@ set(HEADERS
 	common.h
 	application.h
 	advertisement.h
+    advertisementservice.h
 	bluezmanager.h
 	ancs_protocol_constants.h
 	ancs.h

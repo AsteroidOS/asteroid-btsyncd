@@ -16,6 +16,7 @@
  */
 
 #include "application.h"
+#include "advertisementservice.h"
 #include "notificationservice.h"
 #include "weatherservice.h"
 #include "mediaservice.h"
@@ -35,6 +36,7 @@ Application::Application(QDBusConnection bus, QObject *parent) : QObject(parent)
     addService(new BatteryService(3, bus));
     addService(new ScreenshotService(4, bus));
     addService(new TimeService(5, bus));
+    addService(new AdvertisementService(6, bus));
 
     qDBusRegisterMetaType<InterfaceList>();
     qDBusRegisterMetaType<ManagedObjectList>();
