@@ -11,9 +11,7 @@ set(SRC
 	descriptor.cpp
 	application.cpp
 	advertisement.cpp
-	bluezmanager.cpp
-	ancs.cpp
-	ancs_notification.cpp)
+	bluezmanager.cpp)
 set(HEADERS
 	notificationservice.h
 	weatherservice.h
@@ -28,9 +26,7 @@ set(HEADERS
 	application.h
 	advertisement.h
 	bluezmanager.h
-	ancs_protocol_constants.h
-	ancs.h
-	ancs_notification.h)
+)
 
 add_executable(asteroid-btsyncd ${SRC} ${HEADERS})
 
