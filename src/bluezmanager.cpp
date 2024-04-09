@@ -101,14 +101,16 @@ void BlueZManager::updateAdapter() {
             if (value.contains(DEVICE_MANAGER_IFACE)) {
                  mBus.connect(BLUEZ_SERVICE_NAME, key, DBUS_PROPERTIES_IFACE, "PropertiesChanged", this, SLOT(PropertiesChanged(QString, QMap<QString, QVariant>, QStringList)));
                  QMap<QString, QVariant> properties = value.value(DEVICE_MANAGER_IFACE);
-                 if(properties.contains("Connected"))
-                    connected |= properties.value("Connected").toBool();
+                 if(properties.contains("Connected") && properties.value("Connected").toBool()) {
+                    connected = true;
+                    if(properties.contains("Alias")) {
+                       mConnectedDevice = properties.value("Alias").toString();
+                    }
+                 }
 
                  if(properties.contains("ServicesResolved"))
                     servicesResolved |= properties.value("ServicesResolved").toBool();
 
-                 if(properties.contains("Alias"))
-                    mConnectedDevice = properties.value("Alias").toString();;
             }
         }
         argument.endMap();
