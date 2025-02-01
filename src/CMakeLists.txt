@@ -13,7 +13,8 @@ set(SRC
 	advertisement.cpp
 	bluezmanager.cpp
 	ancs.cpp
-	ancs_notification.cpp)
+	ancs_notification.cpp
+	cts.cpp)
 set(HEADERS
 	notificationservice.h
 	weatherservice.h
@@ -30,7 +31,8 @@ set(HEADERS
 	bluezmanager.h
 	ancs_protocol_constants.h
 	ancs.h
-	ancs_notification.h)
+	ancs_notification.h
+	cts.h)
 
 add_executable(asteroid-btsyncd ${SRC} ${HEADERS})
 
@@ -40,7 +42,7 @@ target_link_libraries(asteroid-btsyncd PRIVATE
 	QtMpris::QtMpris
 	SystemSettings::SystemSettings
 	PkgConfig::GIOMM)
-	
+
 
 install(TARGETS asteroid-btsyncd
 	DESTINATION ${CMAKE_INSTALL_BINDIR})
