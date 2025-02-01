@@ -1,5 +1,5 @@
 // Implements the Current Time Service as per: https://www.bluetooth.com/specifications/specs/cts-1-1/
-#include "current_time_service.h"
+#include "cts.h"
 
 #include <QDebug>
 #include <QDBusInterface>
