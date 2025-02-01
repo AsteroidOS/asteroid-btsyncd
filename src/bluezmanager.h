@@ -24,6 +24,7 @@
 #include <QDBusConnection>
 
 #include "ancs.h"
+#include "cts.h"
 
 typedef QMap<QString, QMap<QString, QVariant>> InterfaceList;
 
@@ -41,6 +42,7 @@ private:
     QDBusServiceWatcher *mWatcher;
     QDBusConnection mBus;
     ANCS mAncs;
+    CTS mCts;
 
     void updateAdapter();
     void setAdapter(QString adatper);

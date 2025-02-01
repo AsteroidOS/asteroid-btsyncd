@@ -180,6 +180,7 @@ void BlueZManager::onConnectedChanged()
         appIcon = "ios-bluetooth-outline";
     } else {
         mAncs.disconnect();
+        mCts.disconnect();
         //% "Disconnected"
         summary = qtTrId("id-disconnected");
         body = "";
@@ -208,6 +209,8 @@ void BlueZManager::onConnectedChanged()
 }
 
 void BlueZManager::onServicesResolvedChanged() {
-    if (mServicesResolved)
+    if (mServicesResolved) {
         mAncs.searchForAncsCharacteristics();
+        mCts.searchForTimeCharacteristics();
+    }
 }
