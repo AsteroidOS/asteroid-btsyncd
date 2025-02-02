@@ -48,7 +48,41 @@ void CTS::searchForTimeCharacteristics() {
         QDBusInterface timeCharacteristicIface("org.bluez", timeChar, GATT_CHRC_IFACE,
                                                 QDBusConnection::systemBus());
         timeCharacteristicIface.call("StartNotify");
+
+        QMap<QString, QVariant> empty;
+        QDBusMessage response = timeCharacteristicIface.call("ReadValue", empty);
+        QList<QVariant> arguments = response.arguments();
+
+        if(!arguments.isEmpty() && arguments.first().type() == QVariant::ByteArray) {
+            QByteArray bytes = arguments.first().toByteArray();
+            parseCurrentTime(bytes);
+        }
     }
+}
+
+void CTS::parseCurrentTime(QByteArray& bytes)
+{
+    if(bytes.size() != 10) {
+        qWarning() << "Current time value is not 10 bytes long";
+        return;
+    }
+    ushort year = (bytes[1] << 8)  + bytes[0];
+    uint8_t month = bytes[2];
+    uint8_t day = bytes[3];
+    uint8_t hour = bytes[4];
+    uint8_t minute = bytes[5];
+    uint8_t second = bytes[6];
+    uint8_t day_of_week = bytes[7];
+    uint8_t exact_time_256 = bytes[8];
+    uint8_t adjust_reason = bytes[9];
+
+    Maemo::Timed::WallClock::Settings s;
+    QDateTime newTime(QDate(year, month, day), QTime(hour, minute, second));
+    newTime.setTimeZone(QTimeZone::systemTimeZone());
+    s.setTimeManual(newTime.toTime_t());
+
+    Maemo::Timed::Interface timed;
+    timed.wall_clock_settings_async(s);
 }
 
 void CTS::TimeCharacteristicPropertiesChanged(QString /* interfaceName */,
@@ -59,28 +93,7 @@ void CTS::TimeCharacteristicPropertiesChanged(QString /* interfaceName */,
         if (value.type() == QVariant::ByteArray) {
 
             QByteArray bytes = value.toByteArray();
-
-            if(bytes.size() != 10) {
-                qWarning() << "Current time value is not 10 bytes long";
-                return;
-            }
-            ushort year = (bytes[1] << 8)  + bytes[0];
-            uint8_t month = bytes[2];
-            uint8_t day = bytes[3];
-            uint8_t hour = bytes[4];
-            uint8_t minute = bytes[5];
-            uint8_t second = bytes[6];
-            uint8_t day_of_week = bytes[7];
-            uint8_t exact_time_256 = bytes[8];
-            uint8_t adjust_reason = bytes[9];
-
-            Maemo::Timed::WallClock::Settings s;
-            QDateTime newTime(QDate(year, month, day), QTime(hour, minute, second));
-            newTime.setTimeZone(QTimeZone::systemTimeZone());
-            s.setTimeManual(newTime.toTime_t());
-
-            Maemo::Timed::Interface timed;
-            timed.wall_clock_settings_async(s);
+            parseCurrentTime(bytes);
         }
     }
 }

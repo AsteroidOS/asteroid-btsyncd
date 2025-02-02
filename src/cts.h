@@ -22,6 +22,7 @@ class CTS: public QObject
                                                 QMap<QString, QVariant> changedProperties, QStringList invalidatedProperties);
     private:
         bool isMatchingCharacteristic(QString uuid, QMap<QString, QVariantMap> dbusObject);
+        void parseCurrentTime(QByteArray& bytes);
 
 };
 #endif // CTS_H
