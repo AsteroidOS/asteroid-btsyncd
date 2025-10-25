@@ -5,6 +5,7 @@ set(SRC
 	mediaservice.cpp
 	batteryservice.cpp
 	screenshotservice.cpp
+	deviceinfoservice.cpp
 	timeservice.cpp
 	service.cpp
 	characteristic.cpp
@@ -21,6 +22,7 @@ set(HEADERS
 	mediaservice.h
 	batteryservice.h
 	screenshotservice.h
+	deviceinfoservice.h
 	timeservice.h
 	service.h
 	characteristic.h
