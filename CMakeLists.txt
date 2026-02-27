@@ -15,8 +15,7 @@ include(ECMFindQmlModule)
 include(AsteroidCMakeSettings)
 include(AsteroidTranslations)
 
-find_package(Qt5 COMPONENTS DBus REQUIRED)
-find_package(Timed REQUIRED)
+find_package(Qt5 COMPONENTS Core DBus REQUIRED)
 find_package(QtMpris REQUIRED)
 find_package(SystemSettings REQUIRED)
 
