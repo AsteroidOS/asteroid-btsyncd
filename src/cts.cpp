@@ -7,9 +7,7 @@
 #include <QDateTime>
 #include <QTimeZone>
 
-#include <timed-qt5/wallclock>
-#include <timed-qt5/interface>
-
+#include "settime.h"
 #include "common.h"
 
 CTS::CTS() {
@@ -76,13 +74,9 @@ void CTS::parseCurrentTime(QByteArray& bytes)
     uint8_t exact_time_256 = bytes[8];
     uint8_t adjust_reason = bytes[9];
 
-    Maemo::Timed::WallClock::Settings s;
     QDateTime newTime(QDate(year, month, day), QTime(hour, minute, second));
     newTime.setTimeZone(QTimeZone::systemTimeZone());
-    s.setTimeManual(newTime.toTime_t());
-
-    Maemo::Timed::Interface timed;
-    timed.wall_clock_settings_async(s);
+    setSystemTime(newTime);
 }
 
 void CTS::TimeCharacteristicPropertiesChanged(QString /* interfaceName */,
