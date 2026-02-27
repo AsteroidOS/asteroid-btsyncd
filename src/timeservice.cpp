@@ -20,9 +20,7 @@
 #include <QDateTime>
 #include <QTimeZone>
 
-#include <timed-qt5/wallclock>
-#include <timed-qt5/interface>
-
+#include "settime.h"
 #include "timeservice.h"
 #include "characteristic.h"
 #include "common.h"
@@ -36,13 +34,9 @@ void TimeSetChrc::WriteValue(QByteArray value, QVariantMap)
     int minute = (unsigned char) value[4];
     int second = (unsigned char) value[5];
 
-    Maemo::Timed::WallClock::Settings s;
     QDateTime newTime(QDate(year, month, day), QTime(hour, minute, second));
     newTime.setTimeZone(QTimeZone::systemTimeZone());
-    s.setTimeManual(newTime.toTime_t());
-
-    Maemo::Timed::Interface timed;
-    timed.wall_clock_settings_async(s);
+    setSystemTime(newTime);
 }
 
 TimeService::TimeService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, TIME_UUID, parent)
