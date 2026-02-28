@@ -5,6 +5,7 @@ set(SRC
 	mediaservice.cpp
 	batteryservice.cpp
 	screenshotservice.cpp
+	settime.cpp
 	timeservice.cpp
 	service.cpp
 	characteristic.cpp
@@ -21,6 +22,7 @@ set(HEADERS
 	mediaservice.h
 	batteryservice.h
 	screenshotservice.h
+	settime.h
 	timeservice.h
 	service.h
 	characteristic.h
@@ -37,8 +39,8 @@ set(HEADERS
 add_executable(asteroid-btsyncd ${SRC} ${HEADERS})
 
 target_link_libraries(asteroid-btsyncd PRIVATE
+	Qt5::Core
 	Qt5::DBus
-	Timed::Timed
 	QtMpris::QtMpris
 	SystemSettings::SystemSettings
 	PkgConfig::GIOMM)
