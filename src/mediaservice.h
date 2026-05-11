@@ -22,6 +22,8 @@
 
 #include <MprisPlayer>
 
+using namespace Amber;
+
 #include "service.h"
 
 #define MEDIA_COMMAND_PREVIOUS 0x0

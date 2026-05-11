@@ -45,9 +45,9 @@ add_executable(asteroid-btsyncd ${SRC} ${HEADERS})
 target_link_libraries(
 	asteroid-btsyncd
 	PRIVATE
-		Qt5::Core
-		Qt5::DBus
-		QtMpris::QtMpris
+		Qt6::Core
+		Qt6::DBus
+		PkgConfig::AmberMpris
 		SystemSettings::SystemSettings
 		PkgConfig::GIOMM
 )
