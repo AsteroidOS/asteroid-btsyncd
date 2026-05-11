@@ -20,6 +20,8 @@
 #include "common.h"
 
 #include <QDebug>
+#include <QDBusMessage>
+#include <MprisMetaData>
 
 class MediaTitleChrc : public Characteristic
 {
@@ -33,9 +35,7 @@ private:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
-        QVariantMap metadata = m_player->metadata();
-        metadata[Mpris::metadataToString(Mpris::Title)] = QString(value);
-        m_player->setMetadata(metadata);
+        m_player->metaData()->setTitle(QString(value));
     }
 };
 
@@ -51,9 +51,7 @@ private:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
-        QVariantMap metadata = m_player->metadata();
-        metadata[Mpris::metadataToString(Mpris::Album)] = QString(value);
-        m_player->setMetadata(metadata);
+        m_player->metaData()->setAlbumTitle(QString(value));
     }
 };
 
@@ -69,9 +67,7 @@ private:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
-        QVariantMap metadata = m_player->metadata();
-        metadata[Mpris::metadataToString(Mpris::Artist)] = QString(value);
-        m_player->setMetadata(metadata);
+        m_player->metaData()->setContributingArtist(QString(value));
     }
 };
 
@@ -190,7 +186,7 @@ MediaService::MediaService(int index, QDBusConnection bus, QObject *parent) : Se
     m_mprisPlayer->setCanSetFullscreen(false);
 
     m_mprisPlayer->setPlaybackStatus(Mpris::Stopped);
-    m_mprisPlayer->setLoopStatus(Mpris::None);
+    m_mprisPlayer->setLoopStatus(Mpris::LoopNone);
     m_mprisPlayer->setShuffle(false);
 
     addCharacteristic(new MediaTitleChrc(m_mprisPlayer, bus, 0, this));
