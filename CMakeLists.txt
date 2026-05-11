@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.6.0)
 
-project(asteroid-btsyncd
-	VERSION 0.0.1
-	DESCRIPTION "Bluetooth Low Energy synchronization daemon for AsteroidOS")
+project(
+	asteroid-btsyncd
+	VERSION 2.0
+	DESCRIPTION "Bluetooth Low Energy synchronization daemon for AsteroidOS"
+)
 
 find_package(ECM REQUIRED NO_MODULE)
 find_package(AsteroidApp REQUIRED)
