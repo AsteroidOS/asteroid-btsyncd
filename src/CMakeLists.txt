@@ -1,4 +1,5 @@
-set(SRC
+set(
+	SRC
 	main.cpp
 	notificationservice.cpp
 	weatherservice.cpp
@@ -15,8 +16,10 @@ set(SRC
 	bluezmanager.cpp
 	ancs.cpp
 	ancs_notification.cpp
-	cts.cpp)
-set(HEADERS
+	cts.cpp
+)
+set(
+	HEADERS
 	notificationservice.h
 	weatherservice.h
 	mediaservice.h
@@ -34,20 +37,27 @@ set(HEADERS
 	ancs_protocol_constants.h
 	ancs.h
 	ancs_notification.h
-	cts.h)
+	cts.h
+)
 
 add_executable(asteroid-btsyncd ${SRC} ${HEADERS})
 
-target_link_libraries(asteroid-btsyncd PRIVATE
-	Qt5::Core
-	Qt5::DBus
-	QtMpris::QtMpris
-	SystemSettings::SystemSettings
-	PkgConfig::GIOMM)
+target_link_libraries(
+	asteroid-btsyncd
+	PRIVATE
+		Qt5::Core
+		Qt5::DBus
+		QtMpris::QtMpris
+		SystemSettings::SystemSettings
+		PkgConfig::GIOMM
+)
 
+install(
+	TARGETS asteroid-btsyncd
+	DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
-install(TARGETS asteroid-btsyncd
-	DESTINATION ${CMAKE_INSTALL_BINDIR})
-
-install(FILES org.asteroidos.weather.gschema.xml
-	DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas)
+install(
+	FILES org.asteroidos.weather.gschema.xml
+	DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas
+)
