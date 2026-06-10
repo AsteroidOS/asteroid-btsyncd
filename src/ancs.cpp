@@ -141,14 +141,18 @@ void ANCS::NotificationCharacteristicPropertiesChanged(QString /* interfaceName 
                     QByteArray msgId = bytes.mid(4);
                     unsigned int msgKey = decodeNumber(msgId, 0, 4);
                     ANCSNotification *entry = notificationCache.object(msgKey);
-                    if (!entry)
+                    bool isNewEntry = !entry;
+                    if (isNewEntry)
                         entry = new ANCSNotification;
-                    if (!entry)
-                        return;
                     entry->eventFlags = eventFlags;
                     entry->categoryId = categoryId;
                     entry->isNew = isNew;
-                    notificationCache.insert(msgKey, entry);
+                    // The cache owns its entries. For a MODIFIED event the key is
+                    // already present, so mutate that object in place; re-inserting
+                    // the same pointer would make QCache delete it first, leaving a
+                    // dangling pointer.
+                    if (isNewEntry)
+                        notificationCache.insert(msgKey, entry);
 
                     QDBusInterface controlCharacteristicIface("org.bluez", controlCharacteristic, GATT_CHRC_IFACE,
                                                               QDBusConnection::systemBus());
