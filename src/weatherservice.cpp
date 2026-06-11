@@ -29,7 +29,7 @@ int getQByteArrayInt(QByteArray arr, int index) {
 class WeatherCityChrc : public Characteristic
 {
 public:
-    WeatherCityChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_CITY_UUID, {"encrypt-authenticated-write","notify"}, service) {}
+    WeatherCityChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, WEAT_CITY_UUID, {"encrypt-authenticated-write","encrypt-authenticated-notify"}, service) {}
 
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
