@@ -18,7 +18,6 @@ include(Asteroid6CMakeSettings)
 include(Asteroid6Translations)
 
 find_package(Qt6 REQUIRED COMPONENTS Core DBus)
-find_package(SystemSettings REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(AmberMpris ambermpris6 REQUIRED IMPORTED_TARGET)
