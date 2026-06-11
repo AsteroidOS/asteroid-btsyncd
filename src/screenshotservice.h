@@ -42,7 +42,7 @@ class ScreenshotContentChrc : public Characteristic
     Q_OBJECT
     Q_PROPERTY(QByteArray Value READ getValue NOTIFY valueChanged)
 public:
-    ScreenshotContentChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, SCREENSH_CON_UUID, {"encrypt-authenticated-read", "notify"}, service)
+    ScreenshotContentChrc(QDBusConnection bus, int index, Service *service) : Characteristic(bus, index, SCREENSH_CON_UUID, {"encrypt-authenticated-read", "encrypt-authenticated-notify"}, service)
     {}
 
 public slots:

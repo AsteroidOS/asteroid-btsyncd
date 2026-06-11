@@ -126,7 +126,7 @@ class NotificationsFeedbackChrc : public Characteristic
 {
 public:
     NotificationsFeedbackChrc(QDBusConnection bus, int index, QHash<int, uint> *knownAndroidNotifs, Service *service)
-         : Characteristic(bus, index, NOTI_FDB_UUID, {"notify"}, service), mKnownAndroidNotifs(knownAndroidNotifs)
+         : Characteristic(bus, index, NOTI_FDB_UUID, {"encrypt-authenticated-notify"}, service), mKnownAndroidNotifs(knownAndroidNotifs)
     {}
     // TODO: Feedback
 private:

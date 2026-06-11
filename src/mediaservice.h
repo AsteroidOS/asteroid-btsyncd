@@ -40,7 +40,7 @@ class MediaCommandsChrc : public Characteristic
 
 public:
     MediaCommandsChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
-        : Characteristic(bus, index, MEDIA_COMM_UUID, {"notify"}, service), m_player(player)
+        : Characteristic(bus, index, MEDIA_COMM_UUID, {"encrypt-authenticated-notify"}, service), m_player(player)
     {
         m_value.resize(1);
         connect(this, SIGNAL(valueChanged()), this, SLOT(emitPropertiesChanged()));
