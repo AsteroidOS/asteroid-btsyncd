@@ -35,7 +35,7 @@ public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
         const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather");
-        settings->set_string("city-name", value.data());
+        settings->set_string("city-name", std::string(value.constData(), value.size()));
     }
 };
 
