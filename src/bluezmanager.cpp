@@ -20,6 +20,8 @@
 #include <QDBusServiceWatcher>
 #include <QDBusInterface>
 #include <QDBusPendingCall>
+#include <QDBusPendingCallWatcher>
+#include <QDBusPendingReply>
 #include <QDBusArgument>
 #include <QDebug>
 #include <QTimer>
@@ -151,13 +153,34 @@ void BlueZManager::onAdapterChanged()
     {
         qDebug() << "BLE Adapter" << mAdapter << "found";
 
+        // Don't fire-and-forget: a failed RegisterApplication/RegisterAdvertisement
+        // (adapter not ready, AlreadyExists after a partial restart, ...) would
+        // otherwise leave the daemon silently running with no GATT or advertising.
+        // Watch each reply and log errors; updateAdapter() retries on the next
+        // adapter PropertiesChanged.
         QDBusInterface serviceManager(BLUEZ_SERVICE_NAME, mAdapter, GATT_MANAGER_IFACE, mBus);
-        serviceManager.asyncCall("RegisterApplication", QVariant::fromValue(mAppPath), QVariantMap());
-        qDebug() << "Service" << mAppPath.path() << "registered";
+        QDBusPendingCall appCall = serviceManager.asyncCall("RegisterApplication", QVariant::fromValue(mAppPath), QVariantMap());
+        QDBusPendingCallWatcher *appWatcher = new QDBusPendingCallWatcher(appCall, this);
+        connect(appWatcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *w) {
+            QDBusPendingReply<> reply = *w;
+            if (reply.isError())
+                qWarning() << "RegisterApplication failed:" << reply.error().message();
+            else
+                qDebug() << "Service" << mAppPath.path() << "registered";
+            w->deleteLater();
+        });
 
         QDBusInterface adManager(BLUEZ_SERVICE_NAME, mAdapter, LE_ADVERTISING_MANAGER_IFACE, mBus);
-        adManager.asyncCall("RegisterAdvertisement", QVariant::fromValue(mAdvertPath), QVariantMap());
-        qDebug() << "Advertisement" << mAdvertPath.path() << "registered";
+        QDBusPendingCall advCall = adManager.asyncCall("RegisterAdvertisement", QVariant::fromValue(mAdvertPath), QVariantMap());
+        QDBusPendingCallWatcher *advWatcher = new QDBusPendingCallWatcher(advCall, this);
+        connect(advWatcher, &QDBusPendingCallWatcher::finished, this, [this](QDBusPendingCallWatcher *w) {
+            QDBusPendingReply<> reply = *w;
+            if (reply.isError())
+                qWarning() << "RegisterAdvertisement failed:" << reply.error().message();
+            else
+                qDebug() << "Advertisement" << mAdvertPath.path() << "registered";
+            w->deleteLater();
+        });
     }
     else
         qDebug() << "No BLE adapter found";
