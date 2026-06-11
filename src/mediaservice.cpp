@@ -83,6 +83,8 @@ private:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
+        if (!hasMinLength(value, 1))
+            return;
         m_player->setPlaybackStatus(value[0] ? Mpris::Playing : Mpris::Paused);
     }
 };
@@ -164,6 +166,8 @@ private:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
+        if (!hasMinLength(value, 1))
+            return;
         m_player->setVolume(int( (unsigned char) value[0])/100.0);
     }
 };

@@ -50,6 +50,13 @@ public:
     QString getUuid();
     QStringList getFlags();
 
+protected:
+    // Returns false (and logs) when a remote GATT write is shorter than the
+    // fixed layout a WriteValue override is about to index into. Call this at
+    // the top of every override that reads value at a fixed offset, so a short
+    // payload from a paired phone can't drive an out-of-bounds read.
+    bool hasMinLength(const QByteArray &value, int minBytes) const;
+
 private:
     QString mPath;
     QDBusConnection mBus;

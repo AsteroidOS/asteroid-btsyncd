@@ -47,6 +47,8 @@ public:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
+        if (!hasMinLength(value, 10)) // 5 days * 2 bytes
+            return;
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
             settings->set_int("id", getQByteArrayInt(value, i));
@@ -65,6 +67,8 @@ public:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
+        if (!hasMinLength(value, 10)) // 5 days * 2 bytes
+            return;
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
             settings->set_int("min-temp", getQByteArrayInt(value, i));
@@ -80,6 +84,8 @@ public:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
+        if (!hasMinLength(value, 10)) // 5 days * 2 bytes
+            return;
         for(int i = 0; i < 5; i++) {
             const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
             settings->set_int("max-temp", getQByteArrayInt(value, i));
