@@ -27,6 +27,8 @@
 
 void TimeSetChrc::WriteValue(QByteArray value, QVariantMap)
 {
+    if (!hasMinLength(value, 6)) // year, month, day, hour, minute, second
+        return;
     int year = 1900 + (unsigned char) value[0];
     int month = 1+ (unsigned char) value[1];
     int day = (unsigned char) value[2];

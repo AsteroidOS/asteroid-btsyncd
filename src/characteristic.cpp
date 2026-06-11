@@ -19,6 +19,8 @@
 #include "common.h"
 #include "service.h"
 
+#include <QDebug>
+
 Characteristic::Characteristic(QDBusConnection bus, unsigned int index, QString uuid, QStringList flags, Service *service, QObject *parent) : QObject(parent), mBus(QDBusConnection::systemBus())
 {
     mPath = service->getPath().path() + "/char" + QString::number(index);
@@ -66,6 +68,16 @@ QString Characteristic::getUuid()
 QStringList Characteristic::getFlags()
 {
     return mFlags;
+}
+
+bool Characteristic::hasMinLength(const QByteArray &value, int minBytes) const
+{
+    if (value.size() < minBytes) {
+        qWarning() << "Rejecting GATT write to" << mUuid << ": got" << value.size()
+                   << "bytes, expected at least" << minBytes;
+        return false;
+    }
+    return true;
 }
 
 /* Exposed slots */
