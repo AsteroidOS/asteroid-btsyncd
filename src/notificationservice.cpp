@@ -31,7 +31,7 @@ public:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
-        int id;
+        int id = 0;
         uint replacesId;
         QString packageName, appName, appIcon, summary, body, vibrate = nullptr;
 
@@ -110,7 +110,7 @@ public slots:
                     if(reply.type() == QDBusMessage::ErrorMessage)
                         fprintf(stderr, "NotificationsUpdateChrc::writeValue: D-Bus Error: %s\n", reply.errorMessage().toStdString().c_str());
 
-                    mKnownAndroidNotifs->remove(replacesId);
+                    mKnownAndroidNotifs->remove(id);
                 }
             } else
                 mReader.clear();
