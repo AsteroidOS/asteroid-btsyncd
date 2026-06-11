@@ -5,6 +5,7 @@ set(
 	weatherservice.cpp
 	mediaservice.cpp
 	batteryservice.cpp
+	batterystatus.cpp
 	screenshotservice.cpp
 	settime.cpp
 	timeservice.cpp
@@ -24,6 +25,7 @@ set(
 	weatherservice.h
 	mediaservice.h
 	batteryservice.h
+	batterystatus.h
 	screenshotservice.h
 	settime.h
 	timeservice.h
@@ -48,7 +50,6 @@ target_link_libraries(
 		Qt6::Core
 		Qt6::DBus
 		PkgConfig::AmberMpris
-		SystemSettings::SystemSettings
 		PkgConfig::GIOMM
 )
 
