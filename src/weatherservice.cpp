@@ -15,7 +15,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <giomm.h>
+#include <MDConfItem>
 
 #include "weatherservice.h"
 #include "characteristic.h"
@@ -34,8 +34,7 @@ public:
 public slots:
     void WriteValue(QByteArray value, QVariantMap)
     {
-        const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather");
-        settings->set_string("city-name", std::string(value.constData(), value.size()));
+        MDConfItem("/org/asteroidos/weather/city-name").set(QString::fromUtf8(value));
     }
 };
 
@@ -49,13 +48,10 @@ public slots:
     {
         if (!hasMinLength(value, 10)) // 5 days * 2 bytes
             return;
-        for(int i = 0; i < 5; i++) {
-            const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
-            settings->set_int("id", getQByteArrayInt(value, i));
-        }
+        for(int i = 0; i < 5; i++)
+            MDConfItem(QString("/org/asteroidos/weather/day%1/id").arg(i)).set(getQByteArrayInt(value, i));
 
-        const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather");
-        settings->set_int("timestamp-day0", (int)time(NULL));
+        MDConfItem("/org/asteroidos/weather/timestamp-day0").set((int)time(NULL));
     }
 };
 
@@ -69,10 +65,8 @@ public slots:
     {
         if (!hasMinLength(value, 10)) // 5 days * 2 bytes
             return;
-        for(int i = 0; i < 5; i++) {
-            const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
-            settings->set_int("min-temp", getQByteArrayInt(value, i));
-        }
+        for(int i = 0; i < 5; i++)
+            MDConfItem(QString("/org/asteroidos/weather/day%1/min-temp").arg(i)).set(getQByteArrayInt(value, i));
     }
 };
 
@@ -86,10 +80,8 @@ public slots:
     {
         if (!hasMinLength(value, 10)) // 5 days * 2 bytes
             return;
-        for(int i = 0; i < 5; i++) {
-            const Glib::RefPtr<Gio::Settings> settings = Gio::Settings::create("org.asteroidos.weather.day" + std::to_string(i));
-            settings->set_int("max-temp", getQByteArrayInt(value, i));
-        }
+        for(int i = 0; i < 5; i++)
+            MDConfItem(QString("/org/asteroidos/weather/day%1/max-temp").arg(i)).set(getQByteArrayInt(value, i));
     }
 };
 

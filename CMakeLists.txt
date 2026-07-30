@@ -21,14 +21,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core DBus)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(AmberMpris ambermpris6 REQUIRED IMPORTED_TARGET)
-pkg_check_modules(GIOMM giomm-2.4 REQUIRED IMPORTED_TARGET)
-set_property(GLOBAL APPEND PROPERTY _CMAKE_giomm-2.4_TYPE REQUIRED)
-
-if(GIOMM_FOUND)
-	set_property(GLOBAL APPEND PROPERTY PACKAGES_FOUND giomm-2.4)
-else()
-	set_property(GLOBAL APPEND PROPERTY PACKAGES_NOT_FOUND giomm-2.4)
-endif()
+pkg_check_modules(MLITE mlite6 REQUIRED IMPORTED_TARGET)
 
 add_subdirectory(src)
 

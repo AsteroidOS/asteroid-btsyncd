@@ -50,15 +50,10 @@ target_link_libraries(
 		Qt6::Core
 		Qt6::DBus
 		PkgConfig::AmberMpris
-		PkgConfig::GIOMM
+		PkgConfig::MLITE
 )
 
 install(
 	TARGETS asteroid-btsyncd
 	DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
-
-install(
-	FILES org.asteroidos.weather.gschema.xml
-	DESTINATION ${CMAKE_INSTALL_DATADIR}/glib-2.0/schemas
 )
