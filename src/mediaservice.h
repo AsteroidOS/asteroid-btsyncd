@@ -36,30 +36,15 @@ using namespace Amber;
 class MediaCommandsChrc : public Characteristic
 {
     Q_OBJECT
-    Q_PROPERTY(QByteArray Value READ getValue NOTIFY valueChanged)
 
 public:
     MediaCommandsChrc(MprisPlayer *player, QDBusConnection bus, int index, Service *service)
         : Characteristic(bus, index, MEDIA_COMM_UUID, {"encrypt-authenticated-notify"}, service), m_player(player)
     {
-        m_value.resize(1);
-        connect(this, SIGNAL(valueChanged()), this, SLOT(emitPropertiesChanged()));
     }
-
-signals:
-    void valueChanged();
-
-private slots:
-    void emitPropertiesChanged();
 
 private:
     MprisPlayer *m_player;
-    QByteArray m_value;
-
-    QByteArray getValue()
-    {
-        return m_value;
-    }
 
 public slots:
     void pauseRequested();
@@ -69,9 +54,6 @@ public slots:
     void nextRequested();
     void previousRequested();
     void volumeRequested(double volume);
-
-    void StartNotify() {}
-    void StopNotify() {}
 };
 
 class MediaService : public Service

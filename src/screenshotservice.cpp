@@ -40,46 +40,23 @@ void ScreenshotContentChrc::onScreenshotTaken(QString path)
     QFile f(path);
     if(!f.open(QIODevice::ReadOnly)) {
         qDebug() << "Failed to open" << path;
-        m_value = QByteArray::number(0x0);
-        emit valueChanged();
-        emitPropertiesChanged();
+        updateValue(QByteArray::number(0x0));
         return;
     }
 
     qint64 totalSize = f.bytesAvailable();
-    m_value = QByteArray();
-    m_value.append((totalSize >> 0) & 0xFF);
-    m_value.append((totalSize >> 8) & 0xFF);
-    m_value.append((totalSize >> 16) & 0xFF);
-    m_value.append((totalSize >> 24) & 0xFF);
-    emit valueChanged();
-    emitPropertiesChanged();
+    QByteArray size;
+    size.append((totalSize >> 0) & 0xFF);
+    size.append((totalSize >> 8) & 0xFF);
+    size.append((totalSize >> 16) & 0xFF);
+    size.append((totalSize >> 24) & 0xFF);
+    updateValue(size);
 
-    while (!f.atEnd()) {
-        m_value = f.read(20);
-        emit valueChanged();
-        emitPropertiesChanged();
-    }
+    while (!f.atEnd())
+        updateValue(f.read(20));
     f.close();
 }
 
-void ScreenshotContentChrc::emitPropertiesChanged()
-{
-    QDBusConnection connection = QDBusConnection::systemBus();
-    QDBusMessage message = QDBusMessage::createSignal(getPath().path(),
-                                                      "org.freedesktop.DBus.Properties",
-                                                      "PropertiesChanged");
-
-    QVariantMap changedProperties;
-    changedProperties[QStringLiteral("Value")] = QVariant(m_value);
-
-    QList<QVariant> arguments;
-    arguments << QVariant(GATT_CHRC_IFACE) << QVariant(changedProperties) << QVariant(QStringList());
-    message.setArguments(arguments);
-
-    if (!connection.send(message))
-        qDebug() << "Failed to send DBus property notification signal";
-}
 
 ScreenshotService::ScreenshotService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, SCREENSH_UUID, parent)
 {
