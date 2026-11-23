@@ -74,4 +74,9 @@
 #define TIME_UUID         "00005071-0000-0000-0000-00A57E401D05"
 #define TIME_SET_UUID     "00005001-0000-0000-0000-00A57E401D05"
 
+/* Adafruit BLE File Transfer (filetransferservice.h) */
+#define FTS_UUID          "0000febb-0000-1000-8000-00805f9b34fb"
+#define FTS_VERSION_UUID  "adaf0100-4669-6c65-5472-616e73666572"
+#define FTS_TRANSFER_UUID "adaf0200-4669-6c65-5472-616e73666572"
+
 #endif // COMMON_H
