@@ -20,6 +20,7 @@
 #include "service.h"
 
 #include <QDebug>
+#include <QDBusMessage>
 
 Characteristic::Characteristic(QDBusConnection bus, unsigned int index, QString uuid, QStringList flags, Service *service, QObject *parent) : QObject(parent), mBus(QDBusConnection::systemBus())
 {
@@ -29,7 +30,11 @@ Characteristic::Characteristic(QDBusConnection bus, unsigned int index, QString 
     mUuid = uuid;
     mFlags = flags;
     mService = service;
+    mNotifying = false;
+
     bus.registerObject(mPath, this, QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllProperties);
+
+    connect(this, &Characteristic::valueChanged, this, [this] { emitPropertiesChanged(mValue); });
 }
 
 QDBusObjectPath Characteristic::getPath()
@@ -70,6 +75,34 @@ QStringList Characteristic::getFlags()
     return mFlags;
 }
 
+bool Characteristic::getNotifying()
+{
+    return mNotifying;
+}
+
+void Characteristic::updateValue(const QByteArray &value)
+{
+    mValue = value;
+    emit valueChanged();
+}
+
+void Characteristic::emitNotifyingChange()
+{
+    QDBusMessage message = QDBusMessage::createSignal(getPath().path(),
+                                                      "org.freedesktop.DBus.Properties",
+                                                      "PropertiesChanged");
+
+    QVariantMap changedProperties;
+    changedProperties.insert(QStringLiteral("Notifying"), QVariant(mNotifying));
+
+    QList<QVariant> arguments;
+    arguments << QVariant(GATT_CHRC_IFACE) << QVariant(changedProperties) << QVariant(QStringList());
+    message.setArguments(arguments);
+
+    if (!mBus.send(message))
+        qWarning() << "Failed to send Notifying property change for" << mUuid;
+}
+
 bool Characteristic::hasMinLength(const QByteArray &value, int minBytes) const
 {
     if (value.size() < minBytes) {
@@ -80,25 +113,52 @@ bool Characteristic::hasMinLength(const QByteArray &value, int minBytes) const
     return true;
 }
 
+void Characteristic::emitPropertiesChanged(const QByteArray &value)
+{
+    QDBusMessage message = QDBusMessage::createSignal(getPath().path(),
+                                                      "org.freedesktop.DBus.Properties",
+                                                      "PropertiesChanged");
+
+    QVariantMap changedProperties;
+    changedProperties.insert(QStringLiteral("Value"), QVariant(value));
+
+    QList<QVariant> arguments;
+    arguments << QVariant(GATT_CHRC_IFACE) << QVariant(changedProperties) << QVariant(QStringList());
+    message.setArguments(arguments);
+
+    if (!mBus.send(message))
+        qWarning() << "Failed to send DBus property notification signal for" << mUuid;
+}
+
 /* Exposed slots */
 
 QByteArray Characteristic::ReadValue(QVariantMap)
 {
-    fprintf(stderr, "Default ReadValue called\n");
-    return QByteArray();
+    qWarning() << "Default ReadValue called on" << mUuid;
+    return mValue;
 }
 
 void Characteristic::WriteValue(QByteArray, QVariantMap)
 {
-    fprintf(stderr, "Default WriteValue called\n");
+    qWarning() << "Default WriteValue called on" << mUuid;
 }
 
 void Characteristic::StartNotify()
 {
-    fprintf(stderr, "Default StartNotify called\n");
+    if (mNotifying)
+        return;
+    mNotifying = true;
+    emit notifyingChanged();
+    emit notifyEnabled();
+    emitNotifyingChange();
 }
 
 void Characteristic::StopNotify()
 {
-    fprintf(stderr, "Default StopNotify called\n");
+    if (!mNotifying)
+        return;
+    mNotifying = false;
+    emit notifyingChanged();
+    emit notifyDisabled();
+    emitNotifyingChange();
 }

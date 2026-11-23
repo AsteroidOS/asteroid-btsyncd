@@ -27,34 +27,20 @@ class BatteryStatus;
 class BatteryLvlChrc : public Characteristic
 {
     Q_OBJECT
-    Q_PROPERTY(QByteArray Value READ getValue NOTIFY valueChanged)
 public:
     BatteryLvlChrc(QDBusConnection bus, int index, Service *service);
 
 public slots:
     QByteArray ReadValue(QVariantMap)
     {
-        return m_value;
+        return getValue();
     }
 
-    void StartNotify() {}
-    void StopNotify() {}
-
 private slots:
-    void emitPropertiesChanged();
     void onBatteryPercentageChanged(int percentage);
-
-signals:
-    void valueChanged();
 
 private:
     BatteryStatus *m_battery;
-    QByteArray m_value;
-
-    QByteArray getValue()
-    {
-        return m_value;
-    }
 };
 
 class BatteryService : public Service

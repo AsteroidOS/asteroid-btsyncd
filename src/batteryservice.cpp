@@ -15,13 +15,11 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "batterystatus.h"
+#include "batteryservice.h"
 
-#include <QTimer>
-#include <QDBusMessage>
 #include <QDebug>
 
-#include "batteryservice.h"
+#include "batterystatus.h"
 #include "characteristic.h"
 #include "common.h"
 
@@ -30,35 +28,14 @@ BatteryLvlChrc::BatteryLvlChrc(QDBusConnection bus, int index, Service *service)
     m_battery = new BatteryStatus(this);
     connect(m_battery, &BatteryStatus::chargePercentageChanged,
             this, &BatteryLvlChrc::onBatteryPercentageChanged);
-    connect(this, SIGNAL(valueChanged()), this, SLOT(emitPropertiesChanged()));
-    m_value = QByteArray(1, 100);
+
+    updateValue(QByteArray(1, 100));
 }
 
 void BatteryLvlChrc::onBatteryPercentageChanged(int percentage)
 {
-    if (percentage >= 0) {
-        m_value = QByteArray(1, percentage);
-
-        emit valueChanged();
-    }
-}
-
-void BatteryLvlChrc::emitPropertiesChanged()
-{
-    QDBusConnection connection = QDBusConnection::systemBus();
-    QDBusMessage message = QDBusMessage::createSignal(getPath().path(),
-                                                      "org.freedesktop.DBus.Properties",
-                                                      "PropertiesChanged");
-
-    QVariantMap changedProperties;
-    changedProperties[QStringLiteral("Value")] = QVariant(m_value);
-
-    QList<QVariant> arguments;
-    arguments << QVariant(GATT_CHRC_IFACE) << QVariant(changedProperties) << QVariant(QStringList());
-    message.setArguments(arguments);
-
-    if (!connection.send(message))
-        qDebug() << "Failed to send DBus property notification signal";
+    if (percentage >= 0)
+        updateValue(QByteArray(1, percentage));
 }
 
 BatteryService::BatteryService(int index, QDBusConnection bus, QObject *parent) : Service(bus, index, BATTERY_UUID, parent)
