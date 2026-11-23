@@ -18,6 +18,7 @@ set(
 	ancs.cpp
 	ancs_notification.cpp
 	cts.cpp
+	findphoneservice.cpp
 )
 set(
 	HEADERS
@@ -40,6 +41,7 @@ set(
 	ancs.h
 	ancs_notification.h
 	cts.h
+	findphoneservice.h
 )
 
 add_executable(asteroid-btsyncd ${SRC} ${HEADERS})
