@@ -29,8 +29,7 @@
  * Plain C++17 and POSIX, no Qt, so the host test suite can drive the very
  * same code that runs in asteroid-btsyncd. Its executable specification and
  * tests (a Python reference server, run together with this engine against
- * Adafruit's own client) are in https://github.com/monperrus/asteroid-ble-shell
- * (tests/fts_model.py, tests/test_fts.py).
+ * Adafruit's own client) are in tests/fts/.
  *
  * Requests are a byte stream: feed() accepts any split or coalescing of the
  * client's writes. Every complete reply is handed to onMessage as one
