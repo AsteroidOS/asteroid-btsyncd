@@ -55,8 +55,14 @@ FindPhoneService::FindPhoneService(int index, QDBusConnection bus, QObject *pare
     m_ringChrc = new FindPhoneRingChrc(bus, 0, this);
     addCharacteristic(m_ringChrc);
 
-    bus.registerObject("/org/asteroidos/btsyncd/findphone", this,
-                       QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllProperties);
+    const QString path = QStringLiteral("/org/asteroidos/btsyncd/findphone");
+    const auto options = QDBusConnection::ExportAllSlots | QDBusConnection::ExportAllProperties;
+    auto sessionBus = QDBusConnection::sessionBus();
+    if (!sessionBus.registerObject(path, this, options) || !sessionBus.registerService(SERVICE_NAME)) {
+        qWarning() << "Cannot publish Find Phone on the session bus:" << sessionBus.lastError().message();
+    }
+
+    bus.registerObject(path, this, options);
 }
 
 void FindPhoneService::ringPhone(bool ring)
